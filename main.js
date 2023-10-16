@@ -129,6 +129,18 @@ this.world.SetContactListener(listener);
  * Keyboard controls
  */
 $(document).keydown(function(e){
+    if(e.keyCode == 65){
+        goLeft();
+    }
+    if(e.keyCode == 68){
+        goRight();
+    }
+    if(e.keyCode == 87){
+        goUp();
+    }
+    if(e.keyCode == 83){
+        goDown();
+    }
 });
 
 $(document).keyup(function(e){
@@ -176,13 +188,16 @@ function deleteAllObjects(){
 
 function spawnAllObjects(){
     //Ground
-    // platforms.push(defineNewObject(1.0, 0.5, 0.2, (WIDTH/2), HEIGHT, (WIDTH/2), 5, 'ground', 'static', 0, 0));
+    platforms.push(defineNewObject(1.0, 0.5, 0.05, (WIDTH/2), HEIGHT, (WIDTH/2), 5, 'border', 'static', 0, 0));
+    platforms.push(defineNewObject(1.0, 0.5, 0.05, (WIDTH/2), 0, (WIDTH/2), 5, 'border', 'static', 0, 0));
+    platforms.push(defineNewObject(1.0, 0.5, 0.05, 0, (HEIGHT/2), 5, HEIGHT, 'border', 'static', 0, 0));
+    platforms.push(defineNewObject(1.0, 0.5, 0.05, WIDTH, (HEIGHT/2), 5, HEIGHT, 'border', 'static', 0, 0));
 
     // Platform
 
     // Hero
     if(!heroSpawned){
-        hero = defineNewObject(1.0, 0.5, 0.2, (WIDTH/2), (HEIGHT/2), 0, 0, 'hero', 'dynamic', 10);
+        hero = defineNewObject(1.0, 0.5, 0.0, (WIDTH/2), (HEIGHT/2), 0, 0, 'hero', 'dynamic', 10);
         heroSpawned = true;
     }
 }
@@ -196,6 +211,34 @@ function spawnZombies(round){
 
     for (var i = 0; i <= numberOfZombies; i++){
         zombies.push(defineNewObject(1.0, 0.5, 0.2, ((Math.random() * 800) + 1), ((Math.random() * 600) + 1), 0, 0, 'zombie', 'dynamic', 5));
+    }
+}
+
+function goLeft(){
+    hero.GetBody().ApplyImpulse(new b2Vec2(-5, 0), hero.GetBody().GetWorldCenter());
+    if(hero.GetBody().GetLinearVelocity().x < -10){
+        hero.GetBody().SetLinearVelocity(new b2Vec2(-10, hero.GetBody().GetLinearVelocity().y));
+    }
+}
+
+function goRight(){
+    hero.GetBody().ApplyImpulse(new b2Vec2(5, 0), hero.GetBody().GetWorldCenter());
+    if(hero.GetBody().GetLinearVelocity().x < 10){
+        hero.GetBody().SetLinearVelocity(new b2Vec2(10, hero.GetBody().GetLinearVelocity().y));
+    }
+}
+
+function goUp(){
+    hero.GetBody().ApplyImpulse(new b2Vec2(0, -5), hero.GetBody().GetWorldCenter());
+    if(hero.GetBody().GetLinearVelocity().y < -10){
+        hero.GetBody().SetLinearVelocity(new b2Vec2(hero.GetBody().GetLinearVelocity().x, -10));
+    }
+}
+
+function goDown(){
+    hero.GetBody().ApplyImpulse(new b2Vec2(0, 5), hero.GetBody().GetWorldCenter());
+    if(hero.GetBody().GetLinearVelocity().y < 10){
+        hero.GetBody().SetLinearVelocity(new b2Vec2(hero.GetBody().GetLinearVelocity().x, 10));
     }
 }
 
