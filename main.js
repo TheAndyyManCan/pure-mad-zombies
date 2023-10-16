@@ -71,6 +71,7 @@ function update(){
     );
     world.DrawDebugData();
     world.ClearForces();
+    // world.SetGravity(new b2Vec2(hero.GetBody().GetPosition().x, hero.GetBody().GetPosition().y));
 
     for(var i in destroyList){
 
@@ -255,24 +256,20 @@ function decelerateHero(){
     var currentX = hero.GetBody().GetLinearVelocity().x;
     var currentY = hero.GetBody().GetLinearVelocity().y;
 
-    if(currentX > 0){
+    if((currentX < 0.1 && currentX > 0) || (currentX > -0.1 && currentX < 0)){
+        x = 0;
+    } else if(currentX > 0){
         x = currentX - 0.1;
-    }
-    if(currentX < 0){
+    } else if(cirrentX < 0){
         x = currentX + 0.1;
     }
-    if(currentY > 0){
-        y = currentY - 0.1;
-    }
-    if(currentY < 0){
-        y = currentY + 0.1;
-    }
 
-    if((currentX < 0.1 && currentX > 0) || (currentX > 0.1 && currentX < 0)){
-        x = 0;
-    }
-    if((currentY < 0.1 && currentY > 0) || (currentY > 0.1 && currentY < 0)){
+    if((currentY < 0.1 && currentY > 0) || (currentY > -0.1 && currentY < 0)){
         y = 0;
+    } else if(currentY > 0){
+        y = currentY - 0.1;
+    } else if(currentY < 0){
+        y = currentY + 0.1;
     }
 
     hero.GetBody().SetLinearVelocity(new b2Vec2(x, y));
