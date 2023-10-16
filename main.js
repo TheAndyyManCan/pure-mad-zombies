@@ -261,6 +261,13 @@ function decelerateHero(){
         y = hero.GetBody().GetLinearVelocity().y + 0.1;
     }
 
+    if((hero.GetBody().GetLinearVelocity().x < 0.1 && hero.GetBody().GetLinearVelocity().x > 0) || (hero.GetBody().GetLinearVelocity().x > 0.1 && hero.GetBody().GetLinearVelocity().x < 0)){
+        x = 0;
+    }
+    if((hero.GetBody().GetLinearVelocity().y < 0.1 && hero.GetBody().GetLinearVelocity().y > 0) || (hero.GetBody().GetLinearVelocity().y > 0.1 && hero.GetBody().GetLinearVelocity().y < 0)){
+        y = 0;
+    }
+
     hero.GetBody().SetLinearVelocity(new b2Vec2(x, y));
 }
 
