@@ -38,6 +38,8 @@ var world = new b2World(
 var win = false;
 var lose = false;
 var heroSpawned = false;
+var round = 0; // Round will update at first game loop
+var kills = 0;
 var startX, startY;
 
 /**
@@ -45,6 +47,7 @@ var startX, startY;
  */
 var hero;
 var platforms = [];
+var zombies = [];
 spawnAllObjects();
 
 /**
@@ -69,9 +72,21 @@ function update(){
     world.ClearForces();
 
     for(var i in destroyList){
+
+        if(destroyList[i].GetUserData().id == "zombie"){
+            kills++;
+        }
+
         world.DestroyBody(destroyList[i]);
+
     }
     destroyList.length = 0;
+
+    if(zombies.length == kills){
+        round++;
+        $('#round').html(round);
+        spawnZombies(round);
+    }
 
     if(win){
         winGame();
@@ -166,8 +181,22 @@ function spawnAllObjects(){
     // Platform
 
     // Hero
-    hero = defineNewObject(1.0, 0.5, 0.2, (WIDTH/2), (HEIGHT/2), 0, 0, 'hero', 'dynamic', 10);
-    heroSpawned = true;
+    if(!heroSpawned){
+        hero = defineNewObject(1.0, 0.5, 0.2, (WIDTH/2), (HEIGHT/2), 0, 0, 'hero', 'dynamic', 10);
+        heroSpawned = true;
+    }
+}
+
+function spawnZombies(round){
+    var numberOfZombies = (round + 1) * 2;
+
+    if(numberOfZombies > 30){
+        numberOfZombies = 30;
+    }
+
+    for (var i = 0; i <= numberOfZombies; i++){
+        zombies.push(defineNewObject(1.0, 0.5, 0.2, ((Math.random() * 800) + 1), ((Math.random() * 600) + 1), 0, 0, 'zombie', 'dynamic', 5));
+    }
 }
 
 function defineNewObject(density, friction, restitution, x, y, width, height, objid, objtype, r=0,angle=0){
