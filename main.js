@@ -22,8 +22,8 @@ var destroyList = []; //Empty list at start
 /**
  * Define Canvas and World
  */
-const WIDTH=800;
-const HEIGHT=600;
+const WIDTH=1200;
+const HEIGHT=1200;
 const SCALE=30;
 
 var world = new b2World(
@@ -49,6 +49,7 @@ var hero;
 var platforms = [];
 var zombies = [];
 spawnAllObjects();
+spawnZombies(round);
 
 /**
  * Debug draw
@@ -213,7 +214,11 @@ function spawnZombies(round){
     }
 
     for (var i = 0; i <= numberOfZombies; i++){
-        zombies.push(defineNewObject(1.0, 0.5, 0.2, ((Math.random() * 800) + 1), ((Math.random() * 600) + 1), 0, 0, 'zombie', 'dynamic', 5));
+        zombies.push(defineNewObject(1.0, 0.5, 0.0, ((Math.random() * WIDTH) + 1), ((Math.random() * HEIGHT) + 1), 0, 0, 'zombie', 'dynamic', 5));
+    }
+
+    for(var i in zombies){
+        zombies[i].GetBody().SetFixedRotation(true);
     }
 }
 
@@ -247,24 +252,26 @@ function goDown(){
 
 function decelerateHero(){
     var x, y;
+    var currentX = hero.GetBody().GetLinearVelocity().x;
+    var currentY = hero.GetBody().GetLinearVelocity().y;
 
-    if(hero.GetBody().GetLinearVelocity().x > 0){
-        x = hero.GetBody().GetLinearVelocity().x - 0.1;
+    if(currentX > 0){
+        x = currentX - 0.1;
     }
-    if(hero.GetBody().GetLinearVelocity().x < 0){
-        x = hero.GetBody().GetLinearVelocity().x + 0.1;
+    if(currentX < 0){
+        x = currentX + 0.1;
     }
-    if(hero.GetBody().GetLinearVelocity().y > 0){
-        y = hero.GetBody().GetLinearVelocity().y - 0.1;
+    if(currentY > 0){
+        y = currentY - 0.1;
     }
-    if(hero.GetBody().GetLinearVelocity().y < 0){
-        y = hero.GetBody().GetLinearVelocity().y + 0.1;
+    if(currentY < 0){
+        y = currentY + 0.1;
     }
 
-    if((hero.GetBody().GetLinearVelocity().x < 0.1 && hero.GetBody().GetLinearVelocity().x > 0) || (hero.GetBody().GetLinearVelocity().x > 0.1 && hero.GetBody().GetLinearVelocity().x < 0)){
+    if((currentX < 0.1 && currentX > 0) || (currentX > 0.1 && currentX < 0)){
         x = 0;
     }
-    if((hero.GetBody().GetLinearVelocity().y < 0.1 && hero.GetBody().GetLinearVelocity().y > 0) || (hero.GetBody().GetLinearVelocity().y > 0.1 && hero.GetBody().GetLinearVelocity().y < 0)){
+    if((currentY < 0.1 && currentY > 0) || (currentY > 0.1 && currentY < 0)){
         y = 0;
     }
 
