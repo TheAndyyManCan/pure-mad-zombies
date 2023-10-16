@@ -82,6 +82,8 @@ function update(){
     }
     destroyList.length = 0;
 
+    decelerateHero();
+
     if(zombies.length == kills){
         round++;
         $('#round').html(round);
@@ -198,6 +200,7 @@ function spawnAllObjects(){
     // Hero
     if(!heroSpawned){
         hero = defineNewObject(1.0, 0.5, 0.0, (WIDTH/2), (HEIGHT/2), 0, 0, 'hero', 'dynamic', 10);
+        hero.GetBody().SetFixedRotation(true);
         heroSpawned = true;
     }
 }
@@ -240,6 +243,25 @@ function goDown(){
     if(hero.GetBody().GetLinearVelocity().y < 10){
         hero.GetBody().SetLinearVelocity(new b2Vec2(hero.GetBody().GetLinearVelocity().x, 10));
     }
+}
+
+function decelerateHero(){
+    var x, y;
+
+    if(hero.GetBody().GetLinearVelocity().x > 0){
+        x = hero.GetBody().GetLinearVelocity().x - 0.1;
+    }
+    if(hero.GetBody().GetLinearVelocity().x < 0){
+        x = hero.GetBody().GetLinearVelocity().x + 0.1;
+    }
+    if(hero.GetBody().GetLinearVelocity().y > 0){
+        y = hero.GetBody().GetLinearVelocity().y - 0.1;
+    }
+    if(hero.GetBody().GetLinearVelocity().y < 0){
+        y = hero.GetBody().GetLinearVelocity().y + 0.1;
+    }
+
+    hero.GetBody().SetLinearVelocity(new b2Vec2(x, y));
 }
 
 function defineNewObject(density, friction, restitution, x, y, width, height, objid, objtype, r=0,angle=0){
