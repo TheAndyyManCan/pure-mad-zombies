@@ -27,7 +27,8 @@ const HEIGHT=600;
 const SCALE=30;
 
 var world = new b2World(
-    new b2Vec2(0, 9.81),
+    // new b2Vec2(0, 9.81),
+    new b2Vec2(0,0),
     true
 );
 
@@ -36,11 +37,13 @@ var world = new b2World(
  */
 var win = false;
 var lose = false;
+var heroSpawned = false;
 var startX, startY;
 
 /**
  * World objects
  */
+var hero;
 var platforms = [];
 spawnAllObjects();
 
@@ -150,13 +153,21 @@ function deleteAllObjects(){
     for(var i in platforms){
         destroyList.push(platforms[i].GetBody());
     }
+
+    if(heroSpawned){
+        destroyList.push(hero.GetBody());
+    }
 }
 
 function spawnAllObjects(){
     //Ground
-    platforms.push(defineNewObject(1.0, 0.5, 0.2, (WIDTH/2), HEIGHT, (WIDTH/2), 5, 'ground', 'static', 0, 0));
+    // platforms.push(defineNewObject(1.0, 0.5, 0.2, (WIDTH/2), HEIGHT, (WIDTH/2), 5, 'ground', 'static', 0, 0));
 
     // Platform
+
+    // Hero
+    hero = defineNewObject(1.0, 0.5, 0.2, (WIDTH/2), (HEIGHT/2), 0, 0, 'hero', 'dynamic', 10);
+    heroSpawned = true;
 }
 
 function defineNewObject(density, friction, restitution, x, y, width, height, objid, objtype, r=0,angle=0){
@@ -194,6 +205,8 @@ function defineBodyDefinition(x, y, objtype, angle){
 
     bodyDef.position.x = x / SCALE;
     bodyDef.position.y = y / SCALE;
+
+    bodyDef.gravityScale = 0.0;
     return bodyDef;
 }
 
