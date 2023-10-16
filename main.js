@@ -260,7 +260,7 @@ function decelerateHero(){
         x = 0;
     } else if(currentX > 0){
         x = currentX - 0.1;
-    } else if(cirrentX < 0){
+    } else if(currentX < 0){
         x = currentX + 0.1;
     }
 
