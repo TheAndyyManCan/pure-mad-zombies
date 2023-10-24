@@ -155,6 +155,10 @@ $(document).keyup(function(e){
  * Mouse controls
  */
 $('#b2dcan').mousedown(function(e){
+    console.log(e.offsetX - hero.GetBody().GetPosition().x);
+    console.log(e.offsetY - hero.GetBody().GetPosition().y);
+    var bullet = spawnBullet();
+    bullet.GetBody().ApplyImpulse(new b2Vec2((e.offsetX - (hero.GetBody().GetWorldCenter().x) * SCALE), (e.offsetY - (hero.GetBody().GetWorldCenter().y) * SCALE), bullet.GetBody().GetWorldCenter()));
 });
 
 $('#b2dcan').mouseup(function(e){
@@ -206,6 +210,7 @@ function spawnAllObjects(){
     // Hero
     if(!heroSpawned){
         hero = defineNewObject(1.0, 0.5, 0.0, (WIDTH/2), (HEIGHT/2), 0, 0, 'hero', 'dynamic', 10);
+        // hero.GetBody().SetPosition(new b2Vec2((WIDTH/2), (HEIGHT/2)));
         hero.GetBody().SetFixedRotation(true);
         heroSpawned = true;
     }
@@ -228,7 +233,7 @@ function spawnZombies(round){
 }
 
 function spawnBullet(){
-    bullets.push(defineNewObject(1.0, 0.5, 0, (hero.GetBody().GetPosition().x), (hero.GetBody().GetPosition().y), 1, 1, 'bullet', 'bullet'));
+    return defineNewObject(1.0, 0.5, 0, ((hero.GetBody().GetWorldCenter().x) * SCALE), ((hero.GetBody().GetWorldCenter().y) * SCALE), 1, 1, 'bullet', 'bullet');
 }
 
 /**
