@@ -114,8 +114,17 @@ window.requestAnimationFrame(update);
  */
 var listener = new Box2D.Dynamics.b2ContactListener;
 listener.BeginContact = function(contact) {
-    var fixa = contact.GetFixtureA().GetBody().GetUserData();
-    var fixb = contact.GetFixtureB().GetBody().GetUserData();
+    var fixa = contact.GetFixtureA().GetBody();
+    var fixb = contact.GetFixtureB().GetBody();
+
+    if(fixa.GetUserData().id == "bullet" && fixb.GetUserData().id != "hero"){
+        fixa.SetLinearVelocity(new b2Vec2(0, 0));
+        destroyList.push(fixa);
+    }
+    if(fixb.GetUserData().id == "bullet" && fixa.GetUserData().id != "hero"){
+        fixb.SetLinearVelocity(new b2Vec2(0, 0));
+        destroyList.push(fixb);
+    }
 }
 listener.EndContact = function(contact) {
     var fixa = contact.GetFixtureA().GetBody().GetUserData();
@@ -155,8 +164,6 @@ $(document).keyup(function(e){
  * Mouse controls
  */
 $('#b2dcan').mousedown(function(e){
-    console.log(e.offsetX - hero.GetBody().GetPosition().x);
-    console.log(e.offsetY - hero.GetBody().GetPosition().y);
     var bullet = spawnBullet();
     bullet.GetBody().ApplyImpulse(new b2Vec2((e.offsetX - (hero.GetBody().GetWorldCenter().x) * SCALE), (e.offsetY - (hero.GetBody().GetWorldCenter().y) * SCALE), bullet.GetBody().GetWorldCenter()));
 });
