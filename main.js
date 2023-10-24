@@ -49,6 +49,7 @@ var hero;
 var platforms = [];
 var zombies = [];
 var bullets = [];
+var bulletInterval;
 spawnAllObjects();
 spawnZombies(round);
 
@@ -164,11 +165,11 @@ $(document).keyup(function(e){
  * Mouse controls
  */
 $('#b2dcan').mousedown(function(e){
-    var bullet = spawnBullet();
-    bullet.GetBody().ApplyImpulse(new b2Vec2((e.offsetX - (hero.GetBody().GetWorldCenter().x) * SCALE), (e.offsetY - (hero.GetBody().GetWorldCenter().y) * SCALE), bullet.GetBody().GetWorldCenter()));
+    bulletInterval = setInterval(shootBullet, 150, e.offsetX, e.offsetY);
 });
 
 $('#b2dcan').mouseup(function(e){
+    clearInterval(bulletInterval);
 });
 
 /**
@@ -240,7 +241,12 @@ function spawnZombies(round){
 }
 
 function spawnBullet(){
-    return defineNewObject(1.0, 0.5, 0, ((hero.GetBody().GetWorldCenter().x) * SCALE), ((hero.GetBody().GetWorldCenter().y) * SCALE), 1, 1, 'bullet', 'bullet');
+    return defineNewObject(1.0, 0.5, 0, ((hero.GetBody().GetWorldCenter().x) * SCALE), ((hero.GetBody().GetWorldCenter().y) * SCALE), 2, 2, 'bullet', 'bullet');
+}
+
+function shootBullet(offsetX, offsetY){
+    var bullet = spawnBullet();
+    bullet.GetBody().ApplyImpulse(new b2Vec2((offsetX - (hero.GetBody().GetWorldCenter().x) * SCALE), (offsetY - (hero.GetBody().GetWorldCenter().y) * SCALE), bullet.GetBody().GetWorldCenter()));
 }
 
 /**
