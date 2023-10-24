@@ -38,8 +38,11 @@ var world = new b2World(
 var win = false;
 var lose = false;
 var heroSpawned = false;
+var firing = false;
 var round = 1; // Round will update at first game loop
 var kills = 0;
+var mouseXPosition;
+var mouseYPosition;
 var zombieHealth = 100;
 var startX, startY;
 
@@ -122,6 +125,10 @@ listener.BeginContact = function(contact) {
     var fixa = contact.GetFixtureA().GetBody();
     var fixb = contact.GetFixtureB().GetBody();
 
+    /*
+     * If a bullet hits a zombie, reduce the zombie's health
+     * If the zombie runs out of health, destroy the zombie
+     */
     if(fixa.GetUserData().id == "bullet" && fixb.GetUserData().id == "zombie"){
         var currentZombieHealth = fixb.GetUserData().health;
         var newZombieHealth = currentZombieHealth - 25;
@@ -188,12 +195,21 @@ $(document).keyup(function(e){
  * Mouse controls
  */
 $('#b2dcan').mousedown(function(e){
-    bulletInterval = setInterval(shootBullet, 150, e.offsetX, e.offsetY);
+    firing = true;
+    bulletInterval = setInterval(shootBullet, 150);
 });
 
 $('#b2dcan').mouseup(function(e){
+    firing = false;
     clearInterval(bulletInterval);
 });
+
+$('#b2dcan').mousemove(function(e){
+    if(firing){
+        mouseXPosition = e.offsetX;
+        mouseYPosition = e.offsetY;
+    }
+})
 
 /**
  * Utility functions and objects
@@ -272,9 +288,9 @@ function spawnBullet(){
     return defineNewObject(1.0, 0.5, 0, ((hero.GetBody().GetWorldCenter().x) * SCALE), ((hero.GetBody().GetWorldCenter().y) * SCALE), 2, 2, 'bullet', 'bullet');
 }
 
-function shootBullet(offsetX, offsetY){
+function shootBullet(){
     var bullet = spawnBullet();
-    bullet.GetBody().ApplyImpulse(new b2Vec2((offsetX - (hero.GetBody().GetWorldCenter().x) * SCALE), (offsetY - (hero.GetBody().GetWorldCenter().y) * SCALE), bullet.GetBody().GetWorldCenter()));
+    bullet.GetBody().ApplyImpulse(new b2Vec2((mouseXPosition - (hero.GetBody().GetWorldCenter().x) * SCALE), (mouseYPosition - (hero.GetBody().GetWorldCenter().y) * SCALE), bullet.GetBody().GetWorldCenter()));
 }
 
 /**
