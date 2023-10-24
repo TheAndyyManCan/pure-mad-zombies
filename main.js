@@ -48,6 +48,7 @@ var startX, startY;
 var hero;
 var platforms = [];
 var zombies = [];
+var bullets = [];
 spawnAllObjects();
 spawnZombies(round);
 
@@ -190,6 +191,9 @@ function deleteAllObjects(){
     }
 }
 
+/**
+ * Spawn Objects
+ */
 function spawnAllObjects(){
     //Ground
     platforms.push(defineNewObject(1.0, 0.5, 0.05, (WIDTH/2), HEIGHT, (WIDTH/2), 5, 'border', 'static', 0, 0));
@@ -223,6 +227,13 @@ function spawnZombies(round){
     }
 }
 
+function spawnBullet(){
+    bullets.push(defineNewObject(1.0, 0.5, 0, (hero.GetBody().GetPosition().x), (hero.GetBody().GetPosition().y), 1, 1, 'bullet', 'bullet'));
+}
+
+/**
+ * Player movements
+ */
 function goLeft(){
     hero.GetBody().ApplyImpulse(new b2Vec2(-5, 0), hero.GetBody().GetWorldCenter());
     if(hero.GetBody().GetLinearVelocity().x < -10){
@@ -251,6 +262,10 @@ function goDown(){
     }
 }
 
+/**
+ * Gradually reduce the hero's speed each time the function is called
+ * Should be called every time the world is updated
+ */
 function decelerateHero(){
     var x, y;
     var currentX = hero.GetBody().GetLinearVelocity().x;
@@ -302,6 +317,10 @@ function defineBodyDefinition(x, y, objtype, angle){
             break;
         case 'dynamic':
             bodyDef.type = b2Body.b2_dynamicBody;
+            break;
+        case 'bullet':
+            bodyDef.type = b2Body.b2_dynamicBody;
+            bodyDef.bullet = true;
             break;
         default:
             bodyDef.type = b2Body.b2_staticBody;
