@@ -38,8 +38,9 @@ var world = new b2World(
 var win = false;
 var lose = false;
 var heroSpawned = false;
-var round = 0; // Round will update at first game loop
+var round = 1; // Round will update at first game loop
 var kills = 0;
+var zombieHealth = 100;
 var startX, startY;
 
 /**
@@ -90,9 +91,12 @@ function update(){
 
     if(zombies.length == kills){
         round++;
-        $('#round').html(round);
-        spawnZombies(round);
+        zombieHealth = zombieHealth * 1.1;
+        spawnZombies(round, zombieHealth);
     }
+
+    $('#round').html(round);
+    $('#kills').html(kills);
 
     if(win){
         winGame();
@@ -117,6 +121,25 @@ var listener = new Box2D.Dynamics.b2ContactListener;
 listener.BeginContact = function(contact) {
     var fixa = contact.GetFixtureA().GetBody();
     var fixb = contact.GetFixtureB().GetBody();
+
+    if(fixa.GetUserData().id == "bullet" && fixb.GetUserData().id == "zombie"){
+        var currentZombieHealth = fixb.GetUserData().health;
+        var newZombieHealth = currentZombieHealth - 25;
+        if(newZombieHealth > 0){
+            changeUserData(contact.GetFixtureB(), 'health', newZombieHealth);
+        } else {
+            destroyList.push(fixb);
+        }
+    }
+    if(fixb.GetUserData().id == "bullet" && fixa.GetUserData().id == "zombie"){
+        var currentZombieHealth = fixa.GetUserData().health;
+        var newZombieHealth = currentZombieHealth - 25;
+        if(newZombieHealth > 0){
+            changeUserData(contact.GetFixtureA(), 'health', newZombieHealth);
+        } else {
+            destroyList.push(fixa);
+        }
+    }
 
     if(fixa.GetUserData().id == "bullet" && fixb.GetUserData().id != "hero"){
         fixa.SetLinearVelocity(new b2Vec2(0, 0));
@@ -232,7 +255,9 @@ function spawnZombies(round){
     }
 
     for (var i = 0; i <= numberOfZombies; i++){
-        zombies.push(defineNewObject(1.0, 0.5, 0.0, ((Math.random() * WIDTH) + 1), ((Math.random() * HEIGHT) + 1), 0, 0, 'zombie', 'dynamic', 5));
+        var zombie = defineNewObject(1.0, 0.5, 0.0, ((Math.random() * WIDTH) + 1), ((Math.random() * HEIGHT) + 1), 0, 0, 'zombie', 'dynamic', 5);
+        changeUserData(zombie, 'health', zombieHealth);
+        zombies.push(zombie);
     }
 
     for(var i in zombies){
@@ -240,6 +265,9 @@ function spawnZombies(round){
     }
 }
 
+/**
+ * Shooting mechanics
+ */
 function spawnBullet(){
     return defineNewObject(1.0, 0.5, 0, ((hero.GetBody().GetWorldCenter().x) * SCALE), ((hero.GetBody().GetWorldCenter().y) * SCALE), 2, 2, 'bullet', 'bullet');
 }
