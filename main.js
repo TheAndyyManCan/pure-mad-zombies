@@ -166,7 +166,12 @@ listener.PostSolve = function(contact, impulse) {
     var fixb = contact.GetFixtureB().GetBody().GetUserData();
 }
 listener.PreSolve = function(contact, oldManifold) {
+    var fixa = contact.GetFixtureA().GetBody().GetUserData();
+    var fixb = contact.GetFixtureB().GetBody().GetUserData();
 
+    if((fixa.id == "bullet" && fixb.id == "hero") || (fixa.id == "hero" && fixb.id == "bullet")){
+        contact.SetEnabled(false);
+    }
 }
 this.world.SetContactListener(listener);
 
