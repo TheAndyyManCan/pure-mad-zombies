@@ -44,6 +44,8 @@ var kills = 0;
 var mouseXPosition;
 var mouseYPosition;
 var zombieHealth = 100;
+var zombieSpeed = 5;
+var maxZombieSpeed = 5;
 var startX, startY;
 
 /**
@@ -91,11 +93,16 @@ function update(){
     destroyList.length = 0;
 
     decelerateHero();
+    moveZombies();
 
     if(zombies.length == kills){
         round++;
         zombieHealth = zombieHealth * 1.1;
-        spawnZombies(round, zombieHealth);
+        zombieSpeed = zombieSpeed * 1.5;
+        if(zombieSpeed > maxZombieSpeed){
+            zombieSpeed = maxZombieSpeed;
+        }
+        spawnZombies(round);
     }
 
     $('#round').html(round);
@@ -268,6 +275,9 @@ function spawnAllObjects(){
     }
 }
 
+/**
+ * Zombies
+ */
 function spawnZombies(round){
     var numberOfZombies = (round + 1) * 2;
 
@@ -283,6 +293,14 @@ function spawnZombies(round){
 
     for(var i in zombies){
         zombies[i].GetBody().SetFixedRotation(true);
+    }
+}
+
+function moveZombies(){
+    for(var i in zombies){
+        var zombiePosition = zombies[i].GetBody().GetWorldCenter();
+        zombies[i].GetBody().ApplyImpulse(new b2Vec2((hero.GetBody().GetWorldCenter().x * SCALE) - (zombiePosition.x * SCALE), (hero.GetBody().GetWorldCenter().y * SCALE) - (zombiePosition.y * SCALE), zombies[i].GetBody().GetWorldCenter()));
+        zombies[i].GetBody().SetLinearVelocity(new b2Vec2(zombieSpeed, zombieSpeed));
     }
 }
 
