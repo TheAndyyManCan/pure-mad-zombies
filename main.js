@@ -45,7 +45,7 @@ var mouseXPosition;
 var mouseYPosition;
 var zombieHealth = 100;
 var zombieSpeed = 5;
-var maxZombieSpeed = 5;
+var maxZombieSpeed = 50;
 var startX, startY;
 
 /**
@@ -72,6 +72,7 @@ world.SetDebugDraw(debugDraw);
 
 //Update World Loop
 function update(){
+    console.log(hero.GetBody().GetUserData().health);
     world.Step(
         1/60, //framerate
         10, //velocity iterations
@@ -98,7 +99,7 @@ function update(){
     if(zombies.length == kills){
         round++;
         zombieHealth = zombieHealth * 1.1;
-        zombieSpeed = zombieSpeed * 1.5;
+        zombieSpeed = zombieSpeed * 1.2;
         if(zombieSpeed > maxZombieSpeed){
             zombieSpeed = maxZombieSpeed;
         }
@@ -138,7 +139,7 @@ listener.BeginContact = function(contact) {
      */
     if(fixa.GetUserData().id == "bullet" && fixb.GetUserData().id == "zombie"){
         var currentZombieHealth = fixb.GetUserData().health;
-        var newZombieHealth = currentZombieHealth - 25;
+        var newZombieHealth = currentZombieHealth - 40;
         if(newZombieHealth > 0){
             changeUserData(contact.GetFixtureB(), 'health', newZombieHealth);
         } else {
@@ -147,13 +148,34 @@ listener.BeginContact = function(contact) {
     }
     if(fixb.GetUserData().id == "bullet" && fixa.GetUserData().id == "zombie"){
         var currentZombieHealth = fixa.GetUserData().health;
-        var newZombieHealth = currentZombieHealth - 25;
+        var newZombieHealth = currentZombieHealth - 40;
         if(newZombieHealth > 0){
             changeUserData(contact.GetFixtureA(), 'health', newZombieHealth);
         } else {
             destroyList.push(fixa);
         }
     }
+
+    // if(fixa.GetUserData().id == "zombie" && fixb.GetUserData().id == "hero"){
+    //     console.log('hero hit 1');
+    //     var currentHeroHealth = fixb.GetUserData().health;
+    //     var newHeroHealth = currentHeroHealth - 25;
+    //     if(newHeroHealth > 0){
+    //         changeUserData(contact.GetFixtureB(), 'health', newHeroHealth);
+    //     } else {
+    //         lose = true;
+    //     }
+    // }
+    // if(fixb.GetUserData().id == "zombie" && fixa.GetUserData().id == "hero"){
+    //     console.log('hero hit 2');
+    //     var currentHeroHealth = fixa.GetUserData().health;
+    //     var newHeroHealth = currentHeroHealth - 25;
+    //     if(newHeroHealth > 0){
+    //         changeUserData(contact.GetFixtureA(), 'health', newHeroHealth);
+    //     } else {
+    //         lose = true;
+    //     }
+    // }
 
     if(fixa.GetUserData().id == "bullet" && fixb.GetUserData().id != "hero"){
         fixa.SetLinearVelocity(new b2Vec2(0, 0));
@@ -240,17 +262,23 @@ function loseGame(){
 function restartGame(){
     win = false;
     lose = false;
+    round = 1;
+    kills = 0;
     deleteAllObjects();
-    setTimeout(spawnAllObjects(), 1000);
+    setTimeout(spawnAllObjects, 1000);
 }
 
 function deleteAllObjects(){
     for(var i in platforms){
         destroyList.push(platforms[i].GetBody());
     }
+    for(var i in zombies){
+        destroyList.push(zombies[i].GetBody());
+    }
 
     if(heroSpawned){
         destroyList.push(hero.GetBody());
+        heroSpawned = false;
     }
 }
 
@@ -272,7 +300,10 @@ function spawnAllObjects(){
         // hero.GetBody().SetPosition(new b2Vec2((WIDTH/2), (HEIGHT/2)));
         hero.GetBody().SetFixedRotation(true);
         heroSpawned = true;
+        changeUserData(hero, 'health', 100);
     }
+
+    // spawnZombies(round);
 }
 
 /**
@@ -296,11 +327,46 @@ function spawnZombies(round){
     }
 }
 
-function moveZombies(){
-    for(var i in zombies){
+function moveZombies() {
+    // Loop through all zombies
+    for (var i in zombies) {
         var zombiePosition = zombies[i].GetBody().GetWorldCenter();
-        zombies[i].GetBody().ApplyImpulse(new b2Vec2((hero.GetBody().GetWorldCenter().x * SCALE) - (zombiePosition.x * SCALE), (hero.GetBody().GetWorldCenter().y * SCALE) - (zombiePosition.y * SCALE), zombies[i].GetBody().GetWorldCenter()));
-        zombies[i].GetBody().SetLinearVelocity(new b2Vec2(zombieSpeed, zombieSpeed));
+        var heroPosition = hero.GetBody().GetWorldCenter();
+
+        // Calculate the vector from zombie to hero
+        var xDirection = heroPosition.x - zombiePosition.x;
+        var yDirection = heroPosition.y - zombiePosition.y;
+
+        // Calculate the distance between the zombie and the hero
+        var distance = Math.sqrt(xDirection * xDirection + yDirection * yDirection);
+
+        // Normalize the direction vector
+        if (distance > 0) {
+            xDirection /= distance;
+            yDirection /= distance;
+        }
+
+        // Adjust the force based on distance; use "arrive" behavior
+        var maxForce = 20; // Maximum steering force
+        var slowingRadius = 35; // Radius within which zombies start to slow down
+
+        // Calculate the target speed based on the adjusted slowing radius
+        var targetSpeed = (distance / slowingRadius) * zombieSpeed;
+
+        // Calculate desired velocity based on target speed
+        var desiredVelocityX = xDirection * targetSpeed;
+        var desiredVelocityY = yDirection * targetSpeed;
+
+        // Calculate the steering force
+        var steerX = desiredVelocityX - zombies[i].GetBody().GetLinearVelocity().x;
+        var steerY = desiredVelocityY - zombies[i].GetBody().GetLinearVelocity().y;
+
+        // Adjust the force based on the maximum steering force
+        steerX = Math.min(steerX, maxForce);
+        steerY = Math.min(steerY, maxForce);
+
+        // Apply the steering force to the zombie
+        zombies[i].GetBody().ApplyForce(new b2Vec2(steerX, steerY), zombiePosition);
     }
 }
 
@@ -429,8 +495,15 @@ function defineFixtureDefinitionShape(fixDef, width, height, r=0){
 }
 
 function defineRevJoint(body1, body2){
-    var joint = new Box2d.Dynamics.Joints.b2RevoluteJointDef();
-    joint.Initialize(body1.GetBody(), body2.GetBody());
+    var joint = new Box2D.Dynamics.Joints.b2RevoluteJointDef();
+    joint.Initialize(body1.GetBody(), body2.GetBody(), body1.GetBody().GetWorldCenter(), body2.GetBody().GetWorldCenter());
+}
+
+function defineDistanceJoint(body1, body2){
+    var joint = new Box2D.Dynamics.Joints.b2DistanceJointDef();
+    joint.Initialize(body1.GetBody(), body2.GetBody(), body1.GetBody().GetWorldCenter(), body2.GetBody().GetWorldCenter());
+    joint.collideConnected = true;
+    console.log(joint);
 }
 
 function changeUserData(target, property, newValue){
