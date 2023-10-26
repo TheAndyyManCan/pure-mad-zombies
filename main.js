@@ -72,7 +72,6 @@ world.SetDebugDraw(debugDraw);
 
 //Update World Loop
 function update(){
-    console.log(hero.GetBody().GetUserData().health);
     world.Step(
         1/60, //framerate
         10, //velocity iterations
@@ -157,7 +156,6 @@ listener.BeginContact = function(contact) {
     }
 
     if(fixa.GetUserData().id == "zombie" && fixb.GetUserData().id == "hero"){
-        console.log('hero hit 1');
         var currentHeroHealth = fixb.GetUserData().health;
         var newHeroHealth = currentHeroHealth - 25;
         if(newHeroHealth > 0){
@@ -167,7 +165,6 @@ listener.BeginContact = function(contact) {
         }
     }
     if(fixb.GetUserData().id == "zombie" && fixa.GetUserData().id == "hero"){
-        console.log('hero hit 2');
         var currentHeroHealth = fixa.GetUserData().health;
         var newHeroHealth = currentHeroHealth - 25;
         if(newHeroHealth > 0){
@@ -317,7 +314,7 @@ function spawnZombies(round){
     }
 
     for (var i = 0; i <= numberOfZombies; i++){
-        var zombie = defineNewObject(1.0, 0.5, 0.0, ((Math.random() * WIDTH) + 1), ((Math.random() * HEIGHT) + 1), 0, 0, 'zombie', 'dynamic', 5);
+        var zombie = defineNewObject(1.0, 0.5, 0.0, ((Math.random() * WIDTH) + 5), ((Math.random() * HEIGHT) + 5), 0, 0, 'zombie', 'dynamic', 5);
         changeUserData(zombie, 'health', zombieHealth);
         zombies.push(zombie);
     }
@@ -394,7 +391,7 @@ function goLeft(){
 
 function goRight(){
     hero.GetBody().ApplyImpulse(new b2Vec2(5, 0), hero.GetBody().GetWorldCenter());
-    if(hero.GetBody().GetLinearVelocity().x < 10){
+    if(hero.GetBody().GetLinearVelocity().x > 10){
         hero.GetBody().SetLinearVelocity(new b2Vec2(10, hero.GetBody().GetLinearVelocity().y));
     }
 }
@@ -408,7 +405,7 @@ function goUp(){
 
 function goDown(){
     hero.GetBody().ApplyImpulse(new b2Vec2(0, 5), hero.GetBody().GetWorldCenter());
-    if(hero.GetBody().GetLinearVelocity().y < 10){
+    if(hero.GetBody().GetLinearVelocity().y > 10){
         hero.GetBody().SetLinearVelocity(new b2Vec2(hero.GetBody().GetLinearVelocity().x, 10));
     }
 }
