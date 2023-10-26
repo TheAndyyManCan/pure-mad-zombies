@@ -155,6 +155,10 @@ listener.BeginContact = function(contact) {
         }
     }
 
+    /**
+     * If a zombie hits the hero, then reduces the hero's health by 25
+     * If the hero runs out of health, the game ends
+     */
     if(fixa.GetUserData().id == "zombie" && fixb.GetUserData().id == "hero"){
         var currentHeroHealth = fixb.GetUserData().health;
         var newHeroHealth = currentHeroHealth - 25;
@@ -174,6 +178,10 @@ listener.BeginContact = function(contact) {
         }
     }
 
+    /**
+     * If a bullet hits anything other than the hero, destroy the bullet
+     * Stops loads of bullets just floating around
+     */
     if(fixa.GetUserData().id == "bullet" && fixb.GetUserData().id != "hero"){
         fixa.SetLinearVelocity(new b2Vec2(0, 0));
         destroyList.push(fixa);
@@ -183,14 +191,17 @@ listener.BeginContact = function(contact) {
         destroyList.push(fixb);
     }
 }
+
 listener.EndContact = function(contact) {
     var fixa = contact.GetFixtureA().GetBody().GetUserData();
     var fixb = contact.GetFixtureB().GetBody().GetUserData();
 }
+
 listener.PostSolve = function(contact, impulse) {
     var fixa = contact.GetFixtureA().GetBody().GetUserData();
     var fixb = contact.GetFixtureB().GetBody().GetUserData();
 }
+
 listener.PreSolve = function(contact, oldManifold) {
     var fixa = contact.GetFixtureA().GetBody().GetUserData();
     var fixb = contact.GetFixtureB().GetBody().GetUserData();
@@ -307,23 +318,31 @@ function spawnAllObjects(){
  * Zombies
  */
 function spawnZombies(round){
+    // Increase the number of zombies each round
     var numberOfZombies = (round + 1) * 2;
 
+    // Set a maximum amount of zombies at 30
     if(numberOfZombies > 30){
         numberOfZombies = 30;
     }
 
+    // Spawn the correct amount of zombies, set their health and add them to the zombies array
     for (var i = 0; i <= numberOfZombies; i++){
         var zombie = defineNewObject(1.0, 0.5, 0.0, ((Math.random() * WIDTH) + 5), ((Math.random() * HEIGHT) + 5), 0, 0, 'zombie', 'dynamic', 5);
         changeUserData(zombie, 'health', zombieHealth);
         zombies.push(zombie);
     }
 
+    // Stop zombies rotating around like wheels
     for(var i in zombies){
         zombies[i].GetBody().SetFixedRotation(true);
     }
 }
 
+/**
+ * Sets each zombie's movement to chase the hero
+ * Stops the zombie from orbiting round the hero by slowing the zombie down as it approaches the hero
+ */
 function moveZombies() {
     // Loop through all zombies
     for (var i in zombies) {
@@ -374,9 +393,12 @@ function spawnBullet(){
     return defineNewObject(1.0, 0.5, 0, ((hero.GetBody().GetWorldCenter().x) * SCALE), ((hero.GetBody().GetWorldCenter().y) * SCALE), 2, 2, 'bullet', 'bullet');
 }
 
+/**
+ * Shoot bullets based on the current mouse position and the position of the hero
+ */
 function shootBullet(){
     var bullet = spawnBullet();
-    bullet.GetBody().ApplyImpulse(new b2Vec2((mouseXPosition - (hero.GetBody().GetWorldCenter().x) * SCALE), (mouseYPosition - (hero.GetBody().GetWorldCenter().y) * SCALE), bullet.GetBody().GetWorldCenter()));
+    bullet.GetBody().ApplyImpulse(new b2Vec2((mouseXPosition - (hero.GetBody().GetWorldCenter().x) * SCALE), (mouseYPosition - (hero.GetBody().GetWorldCenter().y) * SCALE)), hero.GetBody().GetWorldCenter());
 }
 
 /**
@@ -384,6 +406,7 @@ function shootBullet(){
  */
 function goLeft(){
     hero.GetBody().ApplyImpulse(new b2Vec2(-5, 0), hero.GetBody().GetWorldCenter());
+    // Set a maximum velocity
     if(hero.GetBody().GetLinearVelocity().x < -10){
         hero.GetBody().SetLinearVelocity(new b2Vec2(-10, hero.GetBody().GetLinearVelocity().y));
     }
@@ -391,6 +414,7 @@ function goLeft(){
 
 function goRight(){
     hero.GetBody().ApplyImpulse(new b2Vec2(5, 0), hero.GetBody().GetWorldCenter());
+    // Set a maximum velocity
     if(hero.GetBody().GetLinearVelocity().x > 10){
         hero.GetBody().SetLinearVelocity(new b2Vec2(10, hero.GetBody().GetLinearVelocity().y));
     }
@@ -398,6 +422,7 @@ function goRight(){
 
 function goUp(){
     hero.GetBody().ApplyImpulse(new b2Vec2(0, -5), hero.GetBody().GetWorldCenter());
+    // Set a maximum velocity
     if(hero.GetBody().GetLinearVelocity().y < -10){
         hero.GetBody().SetLinearVelocity(new b2Vec2(hero.GetBody().GetLinearVelocity().x, -10));
     }
@@ -405,6 +430,7 @@ function goUp(){
 
 function goDown(){
     hero.GetBody().ApplyImpulse(new b2Vec2(0, 5), hero.GetBody().GetWorldCenter());
+    // Set a maximum velocity
     if(hero.GetBody().GetLinearVelocity().y > 10){
         hero.GetBody().SetLinearVelocity(new b2Vec2(hero.GetBody().GetLinearVelocity().x, 10));
     }
@@ -412,6 +438,8 @@ function goDown(){
 
 /**
  * Gradually reduce the hero's speed each time the function is called
+ * If the hero's speed it less than 0 +- 0.1 then stop the hero's movement
+ * This stops the hero from keeping momentum when it should be stopped
  * Should be called every time the world is updated
  */
 function decelerateHero(){
