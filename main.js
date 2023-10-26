@@ -156,26 +156,26 @@ listener.BeginContact = function(contact) {
         }
     }
 
-    // if(fixa.GetUserData().id == "zombie" && fixb.GetUserData().id == "hero"){
-    //     console.log('hero hit 1');
-    //     var currentHeroHealth = fixb.GetUserData().health;
-    //     var newHeroHealth = currentHeroHealth - 25;
-    //     if(newHeroHealth > 0){
-    //         changeUserData(contact.GetFixtureB(), 'health', newHeroHealth);
-    //     } else {
-    //         lose = true;
-    //     }
-    // }
-    // if(fixb.GetUserData().id == "zombie" && fixa.GetUserData().id == "hero"){
-    //     console.log('hero hit 2');
-    //     var currentHeroHealth = fixa.GetUserData().health;
-    //     var newHeroHealth = currentHeroHealth - 25;
-    //     if(newHeroHealth > 0){
-    //         changeUserData(contact.GetFixtureA(), 'health', newHeroHealth);
-    //     } else {
-    //         lose = true;
-    //     }
-    // }
+    if(fixa.GetUserData().id == "zombie" && fixb.GetUserData().id == "hero"){
+        console.log('hero hit 1');
+        var currentHeroHealth = fixb.GetUserData().health;
+        var newHeroHealth = currentHeroHealth - 25;
+        if(newHeroHealth > 0){
+            changeUserData(contact.GetFixtureB(), 'health', newHeroHealth);
+        } else {
+            lose = true;
+        }
+    }
+    if(fixb.GetUserData().id == "zombie" && fixa.GetUserData().id == "hero"){
+        console.log('hero hit 2');
+        var currentHeroHealth = fixa.GetUserData().health;
+        var newHeroHealth = currentHeroHealth - 25;
+        if(newHeroHealth > 0){
+            changeUserData(contact.GetFixtureA(), 'health', newHeroHealth);
+        } else {
+            lose = true;
+        }
+    }
 
     if(fixa.GetUserData().id == "bullet" && fixb.GetUserData().id != "hero"){
         fixa.SetLinearVelocity(new b2Vec2(0, 0));
