@@ -405,7 +405,8 @@ function spawnBullet(){
  */
 function shootBullet(){
     var bullet = spawnBullet();
-    bullet.GetBody().ApplyImpulse(new b2Vec2((mouseXPosition - hero.GetBody().GetWorldCenter().x * SCALE), (mouseYPosition - hero.GetBody().GetWorldCenter().y * SCALE)), hero.GetBody().GetWorldCenter());
+    var heroPosition = hero.GetBody().GetWorldCenter();
+    bullet.GetBody().ApplyImpulse(new b2Vec2((mouseXPosition - heroPosition.x * SCALE), (mouseYPosition - heroPosition.y * SCALE)), heroPosition);
 }
 
 /**
