@@ -12,6 +12,7 @@ class HighScore {
         $this->kills = 0;
     }
 
+    // Class getters and setters
     public function getUsername(){return $this->username;}
     public function getRound(){return $this->round;}
     public function getKills(){return $this->kills;}
@@ -20,6 +21,13 @@ class HighScore {
     private function setRound($round){$this->round = $round;}
     private function setKills($kills){$this->kills = $kills;}
 
+    /**
+     * Stores a new high score in the database
+     * @param $username String The username of the user setting the high score
+     * @param $round int The round the user reached
+     * @param $kills int The number of kills the user achieved
+     * @return Boolean True if successful, false if the update fails
+     */
     public function storeNewHighScore($username, $round, $kills){
         $target = new HighScoreCrud();
         $this->setUsername($username);
@@ -33,6 +41,10 @@ class HighScore {
         }
     }
 
+    /**
+     * Uses HighScoreCrud to retrieve an associative array from the database
+     * @return array|Boolean Associative array with high scores if successful, false boolean if not
+     */
     public function getAllHighScores(){
         $source = new HighScoreCrud();
         $scores = $source->getAllHighScores();
