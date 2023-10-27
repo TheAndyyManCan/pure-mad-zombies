@@ -247,10 +247,8 @@ $('#b2dcan').mouseup(function(e){
 });
 
 $('#b2dcan').mousemove(function(e){
-    if(firing){
-        mouseXPosition = e.offsetX;
-        mouseYPosition = e.offsetY;
-    }
+    mouseXPosition = e.offsetX;
+    mouseYPosition = e.offsetY;
 })
 
 /**
@@ -398,7 +396,8 @@ function spawnBullet(){
  */
 function shootBullet(){
     var bullet = spawnBullet();
-    bullet.GetBody().ApplyImpulse(new b2Vec2((mouseXPosition - (hero.GetBody().GetWorldCenter().x) * SCALE), (mouseYPosition - (hero.GetBody().GetWorldCenter().y) * SCALE)), hero.GetBody().GetWorldCenter());
+    bullet.GetBody().ApplyImpulse(new b2Vec2((mouseXPosition - hero.GetBody().GetWorldCenter().x * SCALE), (mouseYPosition - hero.GetBody().GetWorldCenter().y * SCALE)), hero.GetBody().GetWorldCenter());
+    console.log("shoot");
 }
 
 /**
