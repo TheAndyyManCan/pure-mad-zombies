@@ -371,7 +371,7 @@ function moveZombies() {
 
         // Adjust the force based on distance; use "arrive" behavior
         var maxForce = 20; // Maximum steering force
-        var slowingRadius = 35; // Radius within which zombies start to slow down
+        var slowingRadius = 10; // Radius within which zombies start to slow down
 
         // Calculate the target speed based on the adjusted slowing radius
         var targetSpeed = (distance / slowingRadius) * zombieSpeed;
