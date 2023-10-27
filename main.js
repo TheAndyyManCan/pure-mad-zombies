@@ -265,15 +265,24 @@ function loseGame(){
     restartGame();
 }
 
+/**
+ * Reset global variables to defaults
+ * Delete all objects and respawn all objects
+ */
 function restartGame(){
     win = false;
     lose = false;
     round = 1;
     kills = 0;
+    zombieSpeed = 5;
+    zombieHealth = 100;
     deleteAllObjects();
     setTimeout(spawnAllObjects, 1000);
 }
 
+/**
+ * Loop through all object arrays and add each object to the destroyList
+ */
 function deleteAllObjects(){
     for(var i in platforms){
         destroyList.push(platforms[i].GetBody());
@@ -356,8 +365,8 @@ function moveZombies() {
 
         // Normalize the direction vector
         if (distance > 0) {
-            xDirection /= distance;
-            yDirection /= distance;
+            xDirection = xDirection / distance;
+            yDirection = yDirection / distance;
         }
 
         // Adjust the force based on distance; use "arrive" behavior
@@ -464,6 +473,22 @@ function decelerateHero(){
     hero.GetBody().SetLinearVelocity(new b2Vec2(x, y));
 }
 
+/**
+ * Define a new Box2D object
+ * Object can be static or dynamic. Can also be defined as a bullet
+ * @param (float) density How dense the new object should be. Usually will be 1.0 unless there are specific density requirements
+ * @param (float) friction How much friction the object should have when colliding with other objects
+ * @param (float) restitution How 'bouncy' and object is when colliding with other objects
+ * @param (int) x The x co-ordinate of the centre of the new object
+ * @param (int) y The y co-ordinate of the centre of the new object
+ * @param (int) width The width of the object measured in pixels
+ * @param (int) height The height of the object measured in pixels
+ * @param (string) objid An id which will be referred to by Box2D
+ * @param (string) objtype The type of the object, should be 'static', 'dynamic' or 'bullet'. Will be 'static' by default
+ * @param (float) r The radius of the object if a circle is being defined. Is 0 by default
+ * @param (float) angle The angle of the object if the object type is static. Is 0 by default
+ * @return (object) Returns a Box2D object defined with the parameters provided
+ */
 function defineNewObject(density, friction, restitution, x, y, width, height, objid, objtype, r=0,angle=0){
     var fixDef = defineFixtureDefinition(density, friction, restitution);
     var bodyDef = defineBodyDefinition(x, y, objtype, angle);
@@ -473,6 +498,13 @@ function defineNewObject(density, friction, restitution, x, y, width, height, ob
     return thisobj;
 }
 
+/**
+ * Define the fixture definition of a Box2D object
+ * @param (float) deinsity How dense the object should be. Usually will be 1.0 unless there are specific density requirements
+ * @param (float) friction How much friction the object should have when colliding with other objects
+ * @param (float) restitution How 'bouncy' an object is when colliding with other objects
+ * @return (Object) A Box2D Fixture Definition object to be applied to a Box2D Object
+ */
 function defineFixtureDefinition(density, friction, restitution){
     var fixDef = new b2FixtureDef;
     fixDef.density = density;
@@ -481,6 +513,14 @@ function defineFixtureDefinition(density, friction, restitution){
     return fixDef;
 }
 
+/**
+ * Define the body definition of a Box2D object
+ * @param (int) x The x co-ordinate of the centre of the object
+ * @param (int) y The y co-ordinate of the centre of the object
+ * @param (String) objtype The type of object being created. Should be 'static', 'dynamic' or 'bullet'. Will be 'static' by default.
+ * @param (float) angle The angle of the object if the object type is static
+ * @return (Object) Returns a Body Definition object to be used with a Box2D object
+ */
 function defineBodyDefinition(x, y, objtype, angle){
     var bodyDef = new b2BodyDef;
 
@@ -508,6 +548,14 @@ function defineBodyDefinition(x, y, objtype, angle){
     return bodyDef;
 }
 
+/**
+ * Define the shape of a Box2D object
+ * @param (Object) fixDef The Fixture Definition of the Box2D object
+ * @param (int) width The width of the object measured in pixels
+ * @param (int) height The height of the object measured in pixels
+ * @param (float) radius The radius of the object if the object is a circle. Is 0 by default
+ * @return void
+ */
 function defineFixtureDefinitionShape(fixDef, width, height, r=0){
     if(r > 0){
         fixDef.shape = new b2CircleShape(r/SCALE);
@@ -517,18 +565,26 @@ function defineFixtureDefinitionShape(fixDef, width, height, r=0){
     }
 }
 
-function defineRevJoint(body1, body2){
-    var joint = new Box2D.Dynamics.Joints.b2RevoluteJointDef();
-    joint.Initialize(body1.GetBody(), body2.GetBody(), body1.GetBody().GetWorldCenter(), body2.GetBody().GetWorldCenter());
-}
+// function defineRevJoint(body1, body2){
+//     var joint = new Box2D.Dynamics.Joints.b2RevoluteJointDef();
+//     joint.Initialize(body1.GetBody(), body2.GetBody(), body1.GetBody().GetWorldCenter(), body2.GetBody().GetWorldCenter());
+// }
 
-function defineDistanceJoint(body1, body2){
-    var joint = new Box2D.Dynamics.Joints.b2DistanceJointDef();
-    joint.Initialize(body1.GetBody(), body2.GetBody(), body1.GetBody().GetWorldCenter(), body2.GetBody().GetWorldCenter());
-    joint.collideConnected = true;
-    console.log(joint);
-}
+// function defineDistanceJoint(body1, body2){
+//     var joint = new Box2D.Dynamics.Joints.b2DistanceJointDef();
+//     joint.Initialize(body1.GetBody(), body2.GetBody(), body1.GetBody().GetWorldCenter(), body2.GetBody().GetWorldCenter());
+//     joint.collideConnected = true;
+//     console.log(joint);
+// }
 
+/**
+ * Changes the user data of a Box2D object
+ * Can change existing user data items or create a new user data item
+ * @param (Object) target A Box2D object to change user data/add user data to
+ * @param (String) property The property that's value is to be changed. Using a previously unused property will add that property to the object
+ * @param (Any) The value to be changed/added to the user data property
+ * @returns void
+ */
 function changeUserData(target, property, newValue){
     var currentData = target.GetBody().GetUserData();
     currentData[property] = newValue;

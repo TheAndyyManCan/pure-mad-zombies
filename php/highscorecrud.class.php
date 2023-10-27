@@ -11,7 +11,7 @@ class HighScoreCrud {
         self::$db = db::getInstance();
     }
     
-    public function addNewHighScore($username, $round, $kills){
+    public function addNewHighScore($round, $kills, $username='nouser'){
         $this->sql = "insert into highscores (username, round, kills) values (?,?,?);";
         $this->stmt = self::$db->prepare($this->sql);
         $this->stmt->bind_param("sii", $username, $round, $kills);

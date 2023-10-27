@@ -25,7 +25,7 @@ class HighScore {
         $this->setUsername($username);
         $this->setRound($round);
         $this->setKills($kills);
-        $id = $target->addNewHighScore($this->getUsername(), $this->getRound(), $this->getKills());
+        $id = $target->addNewHighScore($this->getRound(), $this->getKills(), $this->getUsername());
         if($id > 0){
             return true;
         } else {
