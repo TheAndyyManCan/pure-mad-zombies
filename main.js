@@ -15,6 +15,12 @@ var b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 var b2DebugDraw = Box2D.Dynamics.b2DebugDraw;
 
 /**
+ * EaselJS global
+ */
+var easelCan, easelCtx, loader, stage, stageHeight, stageWidth;
+
+
+/**
  * Objects for destruction
  */
 var destroyList = []; //Empty list at start
@@ -22,8 +28,8 @@ var destroyList = []; //Empty list at start
 /**
  * Define Canvas and World
  */
-const WIDTH=1200;
-const HEIGHT=1200;
+const WIDTH=800;
+const HEIGHT=800;
 const SCALE=30;
 
 var world = new b2World(
@@ -39,7 +45,7 @@ var win = false;
 var lose = false;
 var heroSpawned = false;
 var firing = false;
-var round = 1; // Round will update at first game loop
+var round = 1;
 var kills = 0;
 var mouseXPosition;
 var mouseYPosition;
@@ -52,23 +58,97 @@ var startX, startY;
  * World objects
  */
 var hero;
-var platforms = [];
+var leftWall;
+var rightWall;
+var topWall;
+var bottomWall;
 var zombies = [];
 var bullets = [];
 var bulletInterval;
 spawnAllObjects();
-spawnZombies(round);
 
 /**
- * Debug draw
+ * EaselJS Objects
  */
-var debugDraw = new b2DebugDraw();
-debugDraw.SetSprite(document.getElementById("b2dcan").getContext("2d"));
-debugDraw.SetDrawScale(SCALE);
-debugDraw.SetFillAlpha(0.3);
-debugDraw.SetLineThickness(1.0);
-debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-world.SetDebugDraw(debugDraw);
+var easelHero, easelTopWall, easelBottomWall, easelLeftWall, easelRightWall, easelBackground;
+var easelZombies = [];
+var easelBullets = [];
+
+/**
+ * Initialization function
+ */
+function init(){
+    easelCan = document.getElementById('easelcan');
+    easelCtx = easelCan.getContext("2d");
+    stage = new createjs.Stage(easelCan);
+    stage.snapPixelsEnabled = true;
+    stageWidth = stage.canvas.width;
+    stageHeight = stage.canvas.height;
+    var manifest = [
+        {src:'background.jpg', id:'background'},
+        {src:'hero.png', id:'hero'},
+        {src:'horizontalWall.jpg', id:'hWall'},
+        {src:'verticalWall.jpg', id:'vWall'},
+        {src:'bullet.png', id:'bullet'},
+        {src:'zombie.png', id:'zombie'}
+    ];
+
+    loader = new createjs.LoadQueue(false);
+    loader.addEventListener('complete', handleComplete);
+    loader.loadManifest(manifest, true, "./assets/");
+
+    /**
+     * Debug draw
+     */
+    var debugDraw = new b2DebugDraw();
+    debugDraw.SetSprite(document.getElementById("b2dcan").getContext("2d"));
+    debugDraw.SetDrawScale(SCALE);
+    debugDraw.SetFillAlpha(0.3);
+    debugDraw.SetLineThickness(1.0);
+    debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+    world.SetDebugDraw(debugDraw);
+
+}
+
+function handleComplete(){
+    easelBackground = makeBitmap(loader.getResult('background'), stageWidth, stageHeight);
+    easelBackground.x = 0;
+    easelBackground.y = 0;
+
+    easelLeftWall = makeBitmap(loader.getResult('hWall'), 10, HEIGHT);
+    easelLeftWall.x = leftWall.GetBody().GetPosition().x*SCALE;
+    easelLeftWall.y = leftWall.GetBody().GetPosition().y*SCALE;
+
+    easelRightWall = makeBitmap(loader.getResult('hWall'), 10, HEIGHT);
+    easelRightWall.x = rightWall.GetBody().GetPosition().x*SCALE;
+    easelRightWall.y = rightWall.GetBody().GetPosition().y*SCALE;
+
+    easelTopWall = makeBitmap(loader.getResult('vWall'), WIDTH, 10);
+    easelTopWall.x = topWall.GetBody().GetPosition().x*SCALE;
+    easelTopWall.y = topWall.GetBody().GetPosition().y*SCALE;
+
+    easelBottomWall = makeBitmap(loader.getResult('vWall'), WIDTH, 10);
+    easelBottomWall.x = bottomWall.GetBody().GetPosition().x*SCALE;
+    easelBottomWall.y = bottomWall.GetBody().GetPosition().y*SCALE;
+
+    easelHero = makeBitmap(loader.getResult('hero'), 10, 10);
+
+    stage.addChild(easelBackground, easelLeftWall, easelRightWall, easelTopWall, easelBottomWall, easelHero);
+
+    spawnZombies(round);
+    for(var i in easelZombies){
+        stage.addChild(easelZombies[i]);
+    }
+
+    createjs.Ticker.framerate = 60;
+    createjs.Ticker.timingMode = createjs.Ticker.RAF;
+    createjs.Ticker.addEventListener('tick', tick);
+}
+
+function tick(e){
+    update();
+    stage.update(e);
+}
 
 //Update World Loop
 function update(){
@@ -105,6 +185,14 @@ function update(){
         spawnZombies(round);
     }
 
+    easelHero.x = hero.GetBody().GetPosition().x*SCALE;
+    easelHero.y = hero.GetBody().GetPosition().y*SCALE;
+
+    for(var i in easelZombies){
+        easelZombies[i].x = zombies[i].GetBody().GetPosition().x*SCALE;
+        easelZombies[i].y = zombies[i].GetBody().GetPosition().y*SCALE;
+    }
+
     $('#round').html(round);
     $('#kills').html(kills);
 
@@ -120,9 +208,10 @@ function update(){
         loseGame();
     }
 
-    window.requestAnimationFrame(update);
+    // window.requestAnimationFrame(update);
 }
-window.requestAnimationFrame(update);
+// window.requestAnimationFrame(update);
+init();
 
 /**
  * Listeners
@@ -143,6 +232,9 @@ listener.BeginContact = function(contact) {
             changeUserData(contact.GetFixtureB(), 'health', newZombieHealth);
         } else {
             destroyList.push(fixb);
+            var destroyedZombieSprite = fixb.GetUserData().easelSprite;
+            stage.removeChild(destroyedZombieSprite);
+            easelZombies.splice(easelZombies.indexOf(destroyedZombieSprite), 1);
         }
     }
     if(fixb.GetUserData().id == "bullet" && fixa.GetUserData().id == "zombie"){
@@ -152,6 +244,9 @@ listener.BeginContact = function(contact) {
             changeUserData(contact.GetFixtureA(), 'health', newZombieHealth);
         } else {
             destroyList.push(fixa);
+            var destroyedZombieSprite = fixa.GetUserData().easelSprite;
+            stage.removeChild(destroyedZombieSprite);
+            easelZombies.splice(easelZombies.indexOf(destroyedZombieSprite), 1);
         }
     }
 
@@ -236,17 +331,17 @@ $(document).keyup(function(e){
 /**
  * Mouse controls
  */
-$('#b2dcan').mousedown(function(e){
+$('#easelcan').mousedown(function(e){
     firing = true;
     bulletInterval = setInterval(shootBullet, 150);
 });
 
-$('#b2dcan').mouseup(function(e){
+$('#easelcan').mouseup(function(e){
     firing = false;
     clearInterval(bulletInterval);
 });
 
-$('#b2dcan').mousemove(function(e){
+$('#easelcan').mousemove(function(e){
     mouseXPosition = e.offsetX;
     mouseYPosition = e.offsetY;
 })
@@ -284,9 +379,10 @@ function restartGame(){
  * Loop through all object arrays and add each object to the destroyList
  */
 function deleteAllObjects(){
-    for(var i in platforms){
-        destroyList.push(platforms[i].GetBody());
-    }
+    destroyList.push(rightWall.GetBody());
+    destroyList.push(leftWall.GetBody());
+    destroyList.push(topWall.GetBody());
+    destroyList.push(bottomWall.GetBody());
     for(var i in zombies){
         destroyList.push(zombies[i].GetBody());
     }
@@ -302,10 +398,10 @@ function deleteAllObjects(){
  */
 function spawnAllObjects(){
     //Ground
-    platforms.push(defineNewObject(1.0, 0.5, 0.05, (WIDTH/2), HEIGHT, (WIDTH/2), 5, 'border', 'static', 0, 0));
-    platforms.push(defineNewObject(1.0, 0.5, 0.05, (WIDTH/2), 0, (WIDTH/2), 5, 'border', 'static', 0, 0));
-    platforms.push(defineNewObject(1.0, 0.5, 0.05, 0, (HEIGHT/2), 5, HEIGHT, 'border', 'static', 0, 0));
-    platforms.push(defineNewObject(1.0, 0.5, 0.05, WIDTH, (HEIGHT/2), 5, HEIGHT, 'border', 'static', 0, 0));
+    bottomWall = defineNewObject(1.0, 0.5, 0.05, (WIDTH/2), HEIGHT, (WIDTH/2), 10, 'border', 'static', 0, 0);
+    topWall = defineNewObject(1.0, 0.5, 0.05, (WIDTH/2), 0, (WIDTH/2), 10, 'border', 'static', 0, 0);
+    leftWall = defineNewObject(1.0, 0.5, 0.05, 0, (HEIGHT/2), 10, HEIGHT, 'border', 'static', 0, 0);
+    rightWall = defineNewObject(1.0, 0.5, 0.05, WIDTH, (HEIGHT/2), 10, HEIGHT, 'border', 'static', 0, 0);
 
     // Platform
 
@@ -317,8 +413,6 @@ function spawnAllObjects(){
         heroSpawned = true;
         changeUserData(hero, 'health', 100);
     }
-
-    // spawnZombies(round);
 }
 
 /**
@@ -345,8 +439,12 @@ function spawnZombies(round){
         }
 
         var zombie = defineNewObject(1.0, 0.5, 0.0, x, y, 0, 0, 'zombie', 'dynamic', 5);
+        var zombieSprite = makeBitmap(loader.getResult('zombie'), 10, 10);
+        stage.addChild(zombieSprite);
         changeUserData(zombie, 'health', zombieHealth);
+        changeUserData(zombie, 'easelSprite', zombieSprite);
         zombies.push(zombie);
+        easelZombies.push(zombieSprite);
     }
 
     // Stop zombies rotating around like wheels
@@ -383,7 +481,7 @@ function moveZombies() {
         var maxForce = 20; // Maximum steering force
         var slowingRadius = 5; // Radius within which zombies start to slow down
 
-        // Calculate the target speed based on the adjusted slowing radius
+        // Calculate the target speed based on the slowing radius
         var targetSpeed = (distance / slowingRadius) * zombieSpeed;
 
         // Calculate desired velocity based on target speed
@@ -600,4 +698,18 @@ function changeUserData(target, property, newValue){
     var currentData = target.GetBody().GetUserData();
     currentData[property] = newValue;
     target.GetBody().SetUserData(currentData);
+}
+
+/**
+ * EaselJS Helpers
+ */
+function makeBitmap(loaderimage, b2x, b2y){
+    var image = new createjs.Bitmap(loaderimage);
+    var scalex = (b2x * 2) / image.image.naturalWidth;
+    var scaley = (b2y * 2) / image.image.naturalHeight;
+    image.scaleX = scalex;
+    image.scaleY = scaley;
+    image.regX = image.image.width / 2;
+    image.regY = image.image.height / 2;
+    return image;
 }
