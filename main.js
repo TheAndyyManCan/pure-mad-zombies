@@ -63,6 +63,7 @@ var rightWall;
 var topWall;
 var bottomWall;
 var zombies = [];
+var zombieSpriteMap = [];
 var bullets = [];
 var bulletInterval;
 spawnAllObjects();
@@ -136,9 +137,6 @@ function handleComplete(){
     stage.addChild(easelBackground, easelLeftWall, easelRightWall, easelTopWall, easelBottomWall, easelHero);
 
     spawnZombies(round);
-    for(var i in easelZombies){
-        stage.addChild(easelZombies[i]);
-    }
 
     createjs.Ticker.framerate = 60;
     createjs.Ticker.timingMode = createjs.Ticker.RAF;
@@ -175,7 +173,7 @@ function update(){
     decelerateHero();
     moveZombies();
 
-    if(zombies.length == kills){
+    if(zombies.length == 0){
         round++;
         zombieHealth = zombieHealth * 1.1;
         zombieSpeed = zombieSpeed * 1.2;
@@ -188,9 +186,9 @@ function update(){
     easelHero.x = hero.GetBody().GetPosition().x*SCALE;
     easelHero.y = hero.GetBody().GetPosition().y*SCALE;
 
-    for(var i in easelZombies){
-        easelZombies[i].x = zombies[i].GetBody().GetPosition().x*SCALE;
-        easelZombies[i].y = zombies[i].GetBody().GetPosition().y*SCALE;
+    for(var i in zombies){
+        zombieSpriteMap[i].sprite.x = zombies[i].GetBody().GetPosition().x*SCALE;
+        zombieSpriteMap[i].sprite.y = zombies[i].GetBody().GetPosition().y*SCALE;
     }
 
     $('#round').html(round);
@@ -231,10 +229,7 @@ listener.BeginContact = function(contact) {
         if(newZombieHealth > 0){
             changeUserData(contact.GetFixtureB(), 'health', newZombieHealth);
         } else {
-            destroyList.push(fixb);
-            var destroyedZombieSprite = fixb.GetUserData().easelSprite;
-            stage.removeChild(destroyedZombieSprite);
-            easelZombies.splice(easelZombies.indexOf(destroyedZombieSprite), 1);
+            destroyZombie(contact.GetFixtureB());
         }
     }
     if(fixb.GetUserData().id == "bullet" && fixa.GetUserData().id == "zombie"){
@@ -243,10 +238,7 @@ listener.BeginContact = function(contact) {
         if(newZombieHealth > 0){
             changeUserData(contact.GetFixtureA(), 'health', newZombieHealth);
         } else {
-            destroyList.push(fixa);
-            var destroyedZombieSprite = fixa.GetUserData().easelSprite;
-            stage.removeChild(destroyedZombieSprite);
-            easelZombies.splice(easelZombies.indexOf(destroyedZombieSprite), 1);
+            destroyZombie(contact.GetFixtureA());
         }
     }
 
@@ -442,14 +434,25 @@ function spawnZombies(round){
         var zombieSprite = makeBitmap(loader.getResult('zombie'), 10, 10);
         stage.addChild(zombieSprite);
         changeUserData(zombie, 'health', zombieHealth);
-        changeUserData(zombie, 'easelSprite', zombieSprite);
         zombies.push(zombie);
-        easelZombies.push(zombieSprite);
+        zombieSpriteMap.push({zombie: zombie, sprite: zombieSprite});
     }
 
     // Stop zombies rotating around like wheels
     for(var i in zombies){
         zombies[i].GetBody().SetFixedRotation(true);
+    }
+}
+
+function destroyZombie(zombie){
+    destroyList.push(zombie.GetBody());
+    var index = zombies.indexOf(zombie);
+    if(index !== -1){
+        zombies.splice(index, 1);
+
+        var zombieSprite = zombieSpriteMap[index].sprite;
+        stage.removeChild(zombieSprite);
+        zombieSpriteMap.splice(index, 1);
     }
 }
 
