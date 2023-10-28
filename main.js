@@ -44,8 +44,8 @@ var kills = 0;
 var mouseXPosition;
 var mouseYPosition;
 var zombieHealth = 100;
-var zombieSpeed = 5;
-var maxZombieSpeed = 50;
+var zombieSpeed = 0.5;
+var maxZombieSpeed = 20;
 var startX, startY;
 
 /**
@@ -335,7 +335,16 @@ function spawnZombies(round){
 
     // Spawn the correct amount of zombies, set their health and add them to the zombies array
     for (var i = 0; i <= numberOfZombies; i++){
-        var zombie = defineNewObject(1.0, 0.5, 0.0, ((Math.random() * WIDTH) + 5), ((Math.random() * HEIGHT) + 5), 0, 0, 'zombie', 'dynamic', 5);
+
+        // Give each zombie random co-ordinates
+        var x = Math.random() * WIDTH + 10;
+        var y = Math.random() * HEIGHT + 10;
+        if(x > WIDTH || y > HEIGHT){
+            x = Math.random() * WIDTH + 10;
+            y = Math.random() * HEIGHT + 10;
+        }
+
+        var zombie = defineNewObject(1.0, 0.5, 0.0, x, y, 0, 0, 'zombie', 'dynamic', 5);
         changeUserData(zombie, 'health', zombieHealth);
         zombies.push(zombie);
     }
@@ -353,6 +362,7 @@ function spawnZombies(round){
 function moveZombies() {
     // Loop through all zombies
     for (var i in zombies) {
+        // Get the zombie and hero positions
         var zombiePosition = zombies[i].GetBody().GetWorldCenter();
         var heroPosition = hero.GetBody().GetWorldCenter();
 
@@ -364,14 +374,14 @@ function moveZombies() {
         var distance = Math.sqrt(xDirection * xDirection + yDirection * yDirection);
 
         // Normalize the direction vector
-        if (distance > 0) {
+        if (distance > 0) { // Avoid dividing by 0
             xDirection = xDirection / distance;
             yDirection = yDirection / distance;
         }
 
-        // Adjust the force based on distance; use "arrive" behavior
+        // Adjust the force based on distance
         var maxForce = 20; // Maximum steering force
-        var slowingRadius = 10; // Radius within which zombies start to slow down
+        var slowingRadius = 5; // Radius within which zombies start to slow down
 
         // Calculate the target speed based on the adjusted slowing radius
         var targetSpeed = (distance / slowingRadius) * zombieSpeed;
