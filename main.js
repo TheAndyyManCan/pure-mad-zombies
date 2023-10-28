@@ -41,7 +41,7 @@ var world = new b2World(
 /**
  * Game states
  */
-var win = false;
+var pause = true;
 var lose = false;
 var heroSpawned = false;
 var firing = false;
@@ -143,8 +143,10 @@ function handleComplete(){
 }
 
 function tick(e){
-    update();
-    stage.update(e);
+    if(!pause){
+        update();
+        stage.update(e);
+    }
 }
 
 //Update World Loop
@@ -357,7 +359,7 @@ function restartGame(){
     lose = false;
     round = 1;
     kills = 0;
-    zombieSpeed = 5;
+    zombieSpeed = 0.5;
     zombieHealth = 100;
     deleteAllObjects();
     setTimeout(spawnAllObjects, 1000);
