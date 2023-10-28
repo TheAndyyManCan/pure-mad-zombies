@@ -65,6 +65,7 @@ var bottomWall;
 var zombies = [];
 var zombieSpriteMap = [];
 var bullets = [];
+var bulletSpriteMap = [];
 var bulletInterval;
 spawnAllObjects();
 
@@ -72,8 +73,6 @@ spawnAllObjects();
  * EaselJS Objects
  */
 var easelHero, easelTopWall, easelBottomWall, easelLeftWall, easelRightWall, easelBackground;
-var easelZombies = [];
-var easelBullets = [];
 
 /**
  * Initialization function
@@ -183,6 +182,9 @@ function update(){
         spawnZombies(round);
     }
 
+    /**
+     * Update sprite co-ordinates
+     */
     easelHero.x = hero.GetBody().GetPosition().x*SCALE;
     easelHero.y = hero.GetBody().GetPosition().y*SCALE;
 
@@ -191,24 +193,18 @@ function update(){
         zombieSpriteMap[i].sprite.y = zombies[i].GetBody().GetPosition().y*SCALE;
     }
 
+    for(var i in bullets){
+        bulletSpriteMap[i].sprite.x = bullets[i].GetBody().GetPosition().x * SCALE;
+        bulletSpriteMap[i].sprite.y = bullets[i].GetBody().GetPosition().y * SCALE;
+    }
+
     $('#round').html(round);
     $('#kills').html(kills);
-
-    if(win){
-        winGame();
-    }
 
     if(lose){
         loseGame();
     }
-
-    if(win && lose){
-        loseGame();
-    }
-
-    // window.requestAnimationFrame(update);
 }
-// window.requestAnimationFrame(update);
 init();
 
 /**
@@ -271,11 +267,11 @@ listener.BeginContact = function(contact) {
      */
     if(fixa.GetUserData().id == "bullet" && fixb.GetUserData().id != "hero"){
         fixa.SetLinearVelocity(new b2Vec2(0, 0));
-        destroyList.push(fixa);
+        destroyBullet(contact.GetFixtureA());
     }
     if(fixb.GetUserData().id == "bullet" && fixa.GetUserData().id != "hero"){
         fixb.SetLinearVelocity(new b2Vec2(0, 0));
-        destroyList.push(fixb);
+        destroyBullet(contact.GetFixtureB());
     }
 }
 
@@ -430,11 +426,16 @@ function spawnZombies(round){
             y = Math.random() * HEIGHT + 10;
         }
 
+        // Define a new zombie object
         var zombie = defineNewObject(1.0, 0.5, 0.0, x, y, 0, 0, 'zombie', 'dynamic', 5);
+        // Create a new zombite sprite and add it to the stage
         var zombieSprite = makeBitmap(loader.getResult('zombie'), 10, 10);
         stage.addChild(zombieSprite);
+        // Add zombie health
         changeUserData(zombie, 'health', zombieHealth);
+        // Add the zombie to the zombies array
         zombies.push(zombie);
+        // Add the zombie and the associated sprite to the sprite map
         zombieSpriteMap.push({zombie: zombie, sprite: zombieSprite});
     }
 
@@ -444,12 +445,17 @@ function spawnZombies(round){
     }
 }
 
+/**
+ * Destroy a zombie after it has been shot
+ * Adds the zombies body object to the destroyList
+ * Removes the zombie from the zombies array and removes the zombie and sprite from the zombie sprite map array
+ * @param (Object) A box2d object to be destroyed
+ */
 function destroyZombie(zombie){
     destroyList.push(zombie.GetBody());
     var index = zombies.indexOf(zombie);
     if(index !== -1){
         zombies.splice(index, 1);
-
         var zombieSprite = zombieSpriteMap[index].sprite;
         stage.removeChild(zombieSprite);
         zombieSpriteMap.splice(index, 1);
@@ -508,7 +514,12 @@ function moveZombies() {
  * Shooting mechanics
  */
 function spawnBullet(){
-    return defineNewObject(1.0, 0.5, 0, ((hero.GetBody().GetWorldCenter().x) * SCALE), ((hero.GetBody().GetWorldCenter().y) * SCALE), 2, 2, 'bullet', 'bullet');
+    var bullet = defineNewObject(1.0, 0.5, 0, ((hero.GetBody().GetWorldCenter().x) * SCALE), ((hero.GetBody().GetWorldCenter().y) * SCALE), 2, 2, 'bullet', 'bullet');
+    var bulletSprite = makeBitmap(loader.getResult('bullet'), 4, 4);
+    stage.addChild(bulletSprite);
+    bullets.push(bullet);
+    bulletSpriteMap.push({bullet: bullet, sprite: bulletSprite});
+    return bullet;
 }
 
 /**
@@ -518,6 +529,17 @@ function shootBullet(){
     var bullet = spawnBullet();
     var heroPosition = hero.GetBody().GetWorldCenter();
     bullet.GetBody().ApplyImpulse(new b2Vec2((mouseXPosition - heroPosition.x * SCALE), (mouseYPosition - heroPosition.y * SCALE)), heroPosition);
+}
+
+function destroyBullet(bullet){
+    destroyList.push(bullet.GetBody());
+    var index = bullets.indexOf(bullet);
+    if(index !== -1){
+        bullets.splice(index, 1);
+        var bulletSprite = bulletSpriteMap[index].sprite;
+        stage.removeChild(bulletSprite);
+        bulletSpriteMap.splice(index, 1);
+    }
 }
 
 /**
