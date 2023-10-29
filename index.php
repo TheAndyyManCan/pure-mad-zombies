@@ -1,7 +1,11 @@
 <?php
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    error_reporting(E_ALL);
     require_once('php/OAuth.class.php');
     $handler = new ProviderHandler();
     $handler->addProvider('discord', '1167929726145413120', 'B8MUEZyDJ74IsS0T3Qp-iDvN82FJcZx_');
+    $handler->performAction();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,14 +20,39 @@
     <link rel="stylesheet" href="./main.css">
 </head>
 <body>
+    <div id="splashScreen">
+        <div id="title">
+            <h1 id="titleText">Pure Mad Zombies</h1>
+            <h2 id="titleSubText">Click anywhere to begin...</h2>
+        </div>
+    </div>
+    <div id="menuScreen">
+        <?php
+            if($handler->getStatus() == 'logged out' || $handler->getStatus() == null){
+                ?>
+                <div id="loginLinks">
+                    <?php echo $handler->generateLoginText(); ?>
+                </div>
+                <?php
+            } else {
+                ?>
+                <div id="userinfo">
+                    <p>Username: <?php echo $handler->getProviderInstance()->getUserInfo()->username; ?></p>
+                </div>
+                <?php
+            }
+        ?>
+    </div>
     <canvas id="b2dcan" height="800" width="800"></canvas>
     <canvas id="easelcan" height="800" width="800"></canvas>
-    <p>Round: <span id="round"></span></p>
-    <p>Kills: <span id="kills"></span></p>
-    <br /><a href="https://www.vecteezy.com/free-vector/shoot">Shoot Vectors by Vecteezy</a>
-    <br /><a href="https://www.vecteezy.com/free-vector/flame">Flame Vectors by Vecteezy</a>
-    <br /><a href="https://www.vecteezy.com/free-vector/brick-texture">Brick Texture Vectors by Vecteezy</a>
-    <br /><a href="https://www.vecteezy.com/free-vector/zombie">Zombie Vectors by Vecteezy</a>
-    <br /><a href="https://www.vecteezy.com/free-vector/punishment">Punishment Vectors by Vecteezy</a>
+    <p id="roundDisplay">Round: <span id="round"></span></p>
+    <p id="killDisplay">Kills: <span id="kills"></span></p>
+    <div id="licenseLinks">
+        <br /><a href="https://www.vecteezy.com/free-vector/shoot">Shoot Vectors by Vecteezy</a>
+        <br /><a href="https://www.vecteezy.com/free-vector/flame">Flame Vectors by Vecteezy</a>
+        <br /><a href="https://www.vecteezy.com/free-vector/brick-texture">Brick Texture Vectors by Vecteezy</a>
+        <br /><a href="https://www.vecteezy.com/free-vector/zombie">Zombie Vectors by Vecteezy</a>
+        <br /><a href="https://www.vecteezy.com/free-vector/punishment">Punishment Vectors by Vecteezy</a>
+    </div>
 </body>
 </html>

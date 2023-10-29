@@ -2,3 +2,48 @@
     background-color: #000;
     display: none;
 }
+
+#easelcan {
+    display: none;
+}
+
+#splashScreen {
+    background-color: black;
+    color: red;
+    height: 800px;
+    width: 800px;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+#title{
+    position: absolute;
+}
+
+#title-text {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 72;
+}
+
+#roundDisplay {
+    display: none;
+}
+
+#killDisplay {
+    display: none;
+}
+
+#licenseLinks {
+    position: absolute;
+    bottom: 0;
+}
+
+#menuScreen {
+    background-color: black;
+    color: red;
+    height: 800px;
+    width: 800px;
+}

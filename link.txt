@@ -1,0 +1,2 @@
+https://discord.com/api/oauth2/authorize?client_id=1167929726145413120&redirect_uri=https%3A%2F%2Fcomp-server.uhi.ac.uk%2F%7E12001649%2Fbsc-hons%2Fweb-programming%2Fpure-mad-zombies%2Fpublic_html%2F&response_type=code&scope=indentify
+https://discord.com/api/oauth2/authorize?client_id=1167929726145413120&redirect_uri=https%3A%2F%2Fcomp-server.uhi.ac.uk%2F~12001649%2Fbsc-hons%2Fweb-programming%2Fpure-mad-zombies%2Fpublic_html%2F&response_type=code&scope=identify
