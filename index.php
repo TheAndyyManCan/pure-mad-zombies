@@ -3,6 +3,7 @@
     ini_set('display_startup_errors', '1');
     error_reporting(E_ALL);
     require_once('php/OAuth.class.php');
+    require_once('php/highscore.class.php');
     $handler = new ProviderHandler();
     $handler->addProvider('discord', '1167929726145413120', 'B8MUEZyDJ74IsS0T3Qp-iDvN82FJcZx_');
     $handler->performAction();
@@ -38,10 +39,33 @@
                 ?>
                 <div id="userinfo">
                     <p>Username: <?php echo $handler->getProviderInstance()->getUserInfo()->username; ?></p>
+                    <button id="play">Play</button>
+                    <button id="about">About</button>
+                    <?php echo $handler->generateLogoutButton(); ?>
                 </div>
                 <?php
             }
         ?>
+        <div id="highScores">
+            <?php
+                $highscore = new HighScore();
+                echo $highscore->displayHighScores();
+            ?>
+        </div>
+    </div>
+    <div id="aboutScreen">
+        <div>
+            <p>Controls:</p>
+            <p>W: Move up</p>
+            <p>A: Move left</p>
+            <p>S: Move down</p>
+            <p>D: Move right</p>
+            <p>Mouse: Aim</p>
+            <p>Mouse Left Click: Shoot</p>
+            <br />
+            <p>Kill as many zombies as possible. The game ends when your life ends. Death is inevitable.</p>
+            <button id="menuButton">Back to menu</button>
+        </div>
     </div>
     <canvas id="b2dcan" height="800" width="800"></canvas>
     <canvas id="easelcan" height="800" width="800"></canvas>
@@ -54,5 +78,10 @@
         <br /><a href="https://www.vecteezy.com/free-vector/zombie">Zombie Vectors by Vecteezy</a>
         <br /><a href="https://www.vecteezy.com/free-vector/punishment">Punishment Vectors by Vecteezy</a>
     </div>
+    <script>
+        'use strict';
+        var username = <?php echo "'".$handler->getProviderInstance()->getUserInfo()->username."'" ?>;
+        console.log(username);
+    </script>
 </body>
 </html>

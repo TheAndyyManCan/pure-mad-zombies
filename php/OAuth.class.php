@@ -75,6 +75,10 @@ class OAuth {
 		return '<p><a href="?action=login&provider='.$this->providerName.'">Login '.$this->providerName.'</a></p>';
 	}
 
+	public function generateLogoutText(){
+		return '<a href="?action=logout&provider='.$this->providerName.'">Logout</a>';
+	}
+
 	public function login(){
 		$params = array(
 			'client_id' => $this->cid,

@@ -12,7 +12,7 @@
     color: red;
     height: 800px;
     width: 800px;
-    display: none;
+    display: flex;
     justify-content: center;
     align-items: center;
 }
@@ -46,4 +46,49 @@
     color: red;
     height: 800px;
     width: 800px;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+#userinfo {
+    padding-right: 20px;
+}
+
+#highScores {
+    padding-left: 20px;
+}
+
+#play {
+    background-color: red;
+    color: black;
+}
+
+#about {
+    background-color: red;
+    color: black;
+}
+
+#aboutScreen {
+    background-color: black;
+    color: red;
+    height: 800px;
+    width: 800px;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+#menuButton {
+    background-color: red;
+    color: black;
+}
+
+#highScores {
+    color: red;
+}
+
+#highScoreTable {
+    color: red;
+    text-align: center;
 }

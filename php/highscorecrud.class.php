@@ -1,6 +1,6 @@
 <?php
 
-require_once("./db.php");
+require_once(__DIR__."/db.php");
 
 class HighScoreCrud {
 
@@ -49,7 +49,7 @@ class HighScoreCrud {
      * @return array Returns an associative array with the results of the database query
      */
     public function getAllHighScores($style=MYSQLI_ASSOC){
-        $this->sql = "select * from highscores;";
+        $this->sql = "select * from highscores order by round, kills desc;";
         $this->stmt = self::$db->prepare($this->sql);
         $this->stmt->execute();
         $result = $this->stmt->get_result();

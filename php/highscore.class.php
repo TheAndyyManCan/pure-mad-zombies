@@ -1,6 +1,6 @@
 <?php
 
-require_once("./highscorecrud.class.php");
+require_once(__DIR__."/highscorecrud.class.php");
 
 class HighScore {
 
@@ -54,7 +54,7 @@ class HighScore {
                 $newscore = new HighScore();
                 $newscore->setUsername($score['username']);
                 $newscore->setRound($score['round']);
-                $newscore->getKills($score['kills']);
+                $newscore->setKills($score['kills']);
                 array_push($highscores, $newscore);
             }
         }
@@ -63,5 +63,29 @@ class HighScore {
         } else {
             return false;
         }
+    }
+
+    public function displayHighScores(){
+        $result = $this->getAllHighScores();
+        $output = '';
+        if($result != false){
+            $output .= "<table id='highScoreTable'>";
+            $output .= "<tr>";
+            $output .= "<th>Username</th>";
+            $output .= "<th>Round</th>";
+            $output .= "<th>Kills</th>";
+            $output .= "</tr>";
+            foreach($result as $score){
+                $output .= '<tr>';
+                $output .= '<td>'.$score->getUsername().'</td>';
+                $output .= '<td>'.$score->getRound().'</td>';
+                $output .= '<td>'.$score->getKills().'</td>';
+                $output .= '</tr>';
+            }
+            $output .= '</table>';
+        } else {
+            $output .= '<p>No high scores to display</p>';
+        }
+        return $output;
     }
 }

@@ -1,6 +1,32 @@
 'use strict';
 
 /**
+ * Application flow
+ */
+$('#splashScreen').click(function(e){
+    $('#splashScreen').css('display', 'none');
+    $('#menuScreen').css('display', 'flex');
+});
+
+$('#play').click(function(e){
+    $('#menuScreen').css('display', 'none');
+    $('#easelcan').css('display', 'block');
+    $('#roundDisplay').css('display', 'block');
+    $('#killDisplay').css('display', 'block');
+    pause = false;
+});
+
+$('#about').click(function(e){
+    $('#menuScreen').css('display', 'none');
+    $('#aboutScreen').css('display', 'flex');
+});
+
+$('#menuButton').click(function(e){
+    $('#aboutScreen').css('display', 'none');
+    $('#menuScreen').css('display', 'flex');
+});
+
+/**
  * Box2d Web Definitions
  */
 var b2Vec2 = Box2D.Common.Math.b2Vec2;
@@ -340,13 +366,14 @@ $('#easelcan').mousemove(function(e){
  * Utility functions and objects
  */
 
-function winGame(){
-    window.alert('You win!');
-    restartGame();
-}
-
 function loseGame(){
     window.alert('You lose!');
+    updateHighScore(username, round, kills);
+    pause = true;
+    $('#easelcan').css('display', 'none');
+    $('#menuScreen').css('display', 'flex');
+    $('roundDisplay').css('display', 'none');
+    $('killDisplay').css('display', 'none');
     restartGame();
 }
 
@@ -355,7 +382,6 @@ function loseGame(){
  * Delete all objects and respawn all objects
  */
 function restartGame(){
-    win = false;
     lose = false;
     round = 1;
     kills = 0;
@@ -739,4 +765,28 @@ function makeBitmap(loaderimage, b2x, b2y){
     image.regX = image.image.width / 2;
     image.regY = image.image.height / 2;
     return image;
+}
+
+/**
+ * Update high scores in the database using an AJAX request
+ * @param (String) username The username of the currently logged in user
+ * @param (int) round The round the player reached before dying
+ * @param (int) kills The amount of kills the player achieved
+ */
+function updateHighScore(username, round, kills){
+    console.log(username);
+    console.log(round);
+    console.log(kills);
+    var XHR = createXHR();
+    XHR.open('post', 'php/submithighscore.php', true);
+    XHR.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    XHR.send('username=' + encodeURIComponent(username) + '&round=' + encodeURIComponent(round) + '&kills=' + encodeURIComponent(kills));
+}
+
+function createXHR(){
+    if(window.XMLHttpRequest){
+        return new XMLHttpRequest();
+    } else if(window.ActiveXObject){
+        return new ActiveXObject('Microsoft.XMLHTTP');
+    }
 }
