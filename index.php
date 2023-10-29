@@ -1,13 +1,12 @@
+<hide>
 <?php
-    ini_set('display_errors', '1');
-    ini_set('display_startup_errors', '1');
-    error_reporting(E_ALL);
     require_once('php/OAuth.class.php');
     require_once('php/highscore.class.php');
     $handler = new ProviderHandler();
     $handler->addProvider('discord', '1167929726145413120', 'B8MUEZyDJ74IsS0T3Qp-iDvN82FJcZx_');
     $handler->performAction();
 ?>
+</hide>
 <!DOCTYPE html>
 <html lang="en">
 <head>
