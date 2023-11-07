@@ -14,7 +14,9 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous" defer ></script>
     <script src="https://code.createjs.com/1.0.0/easeljs.min.js" defer ></script>
     <script src="https://code.createjs.com/1.0.0/preloadjs.min.js" defer ></script>
-    <script src="./main.js" defer ></script>
+    <script src="./defs.js" defer ></script>
+    <script src="./classlib.js" defer ></script>
+    <!-- <script src="./main.js" defer ></script> -->
     <meta charset="UTF-8">
     <title>Pure Mad Zombies</title>
     <link rel="stylesheet" href="./main.css">
