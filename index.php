@@ -16,6 +16,7 @@
     <script src="https://code.createjs.com/1.0.0/preloadjs.min.js" defer ></script>
     <script src="./js/defs.js" defer ></script>
     <script src="./js/classlib.js" defer ></script>
+    <script src="js/appFlow.js" defer ></script>
     <!-- <script src="./main.js" defer ></script> -->
     <meta charset="UTF-8">
     <title>Pure Mad Zombies</title>
