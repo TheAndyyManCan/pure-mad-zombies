@@ -88,4 +88,20 @@ class Game {
         }
         this.#destroyList.length = 0;
     };
+
+    addMouseHandler(mousectx, type, runfunc){
+        this.#mouseHandler.push(new MouseHandler(mousectx, type, runfunc));
+    }
+
+    handleMouseDown = (e) => {
+
+    }
+
+    handleMouseUp = (e) => {
+
+    }
+
+    handleMouseMove = (e) => {
+
+    }
 }
