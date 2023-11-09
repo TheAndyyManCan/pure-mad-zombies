@@ -2,51 +2,53 @@
 
 class Game {
 
-    #height;
-    #width;
-    #scale;
-    #gravity;
-    #framerate;
-    #b2dcanvas;
-    #b2dctx;
-    #itemList = [];
-    #destroyList = [];
-    #mouseHandler = [];
+    _height;
+    _width;
+    _scale;
+    _gravity;
+    _framerate;
+    _b2dcanvas;
+    _b2dctx;
+    _itemList = [];
+    _destroyList = [];
+    _mouseHandler = [];
 
     constructor(height, width, scale, gravityX, gravityY, framerate, canvasName){
-        this.height = height;
-        this.width = width;
-        this.scale = scale;
-        this.gravity = new b2Vec2(gravityX, gravityY);
-        this.framerate = framerate;
-        this.b2dcanvas = document.getElementById(canvasName);
-        this.b2dctx = this.b2dcanvas.getContext('2d');
-        this.world = new b2World(this.gravity, true);
+        this._height = height;
+        this._width = width;
+        this._scale = scale;
+        this._gravity = new b2Vec2(gravityX, gravityY);
+        this._framerate = framerate;
+        this._b2dcanvas = document.getElementById(canvasName);
+        this._b2dctx = this.b2dcanvas.getContext('2d');
+        this._world = new b2World(this.gravity, true);
     }
 
     // Getters
-    get height(){return this.#height;}
-    get width(){return this.#width;}
-    get scale(){return this.#scale;}
-    get gravity(){return this.#gravity;}
-    get framerate(){return this.#framerate;}
-    get b2dcanvas(){return this.#b2dcanvas;}
-    get b2dctx(){return this.#b2dctx;}
-    get itemList(){return this.#itemList}
-    get destroyList(){return this.#destroyList;}
-    get mouseHandler(){return this.#mouseHandler;}
+    get _height(){return this._height;}
+    get _width(){return this._width;}
+    get _scale(){return this._scale;}
+    get _gravity(){return this._gravity;}
+    get _framerate(){return this._framerate;}
+    get _b2dcanvas(){return this._b2dcanvas;}
+    get _b2dctx(){return this._b2dctx;}
+    get _itemList(){return this._itemList}
+    get _destroyList(){return this._destroyList;}
+    get _mouseHandler(){return this._mouseHandler;}
+    get _world(){return this._world;}
 
     // Setters
-    set height(height){this.#height = height;}
-    set width(width){this.#width = width;}
-    set scale(scale){this.#scale = scale;}
-    set gravity(gravity){this.#gravity = gravity;}
-    set framerate(framerate){this.#framerate = framerate;}
-    set b2dcanvas(b2dcanvas){this.#b2dcanvas = b2dcanvas;}
-    set b2dctx(b2dctx){this.#b2dctx = b2dctx;}
-    set itemList(itemList){this.#itemList = itemList;}
-    set destroyList(destroyList){this.#destroyList = destroyList;}
-    set mouseHandler(mouseHandler){this.#mouseHandler = mouseHandler;}
+    set _height(height){this._height = height;}
+    set _width(width){this._width = width;}
+    set _scale(scale){this._scale = scale;}
+    set _gravity(gravity){this._gravity = gravity;}
+    set _framerate(framerate){this._framerate = framerate;}
+    set _b2dcanvas(b2dcanvas){this._b2dcanvas = b2dcanvas;}
+    set _b2dctx(b2dctx){this._b2dctx = b2dctx;}
+    set _itemList(itemList){this._itemList = itemList;}
+    set _destroyList(destroyList){this._destroyList = destroyList;}
+    set _mouseHandler(mouseHandler){this._mouseHandler = mouseHandler;}
+    set _world(world){this._world = world;}
 
     setupDebugDraw = () => {
         let b2DebugDraw = Box2D.Dynamics.b2DebugDraw;
@@ -56,52 +58,52 @@ class Game {
         debugDraw.SetFillAlpha(0.3);
         debugDraw.SetLineThickness(1.0);
         debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-        this.world.SetDebugDraw(debugDraw);
+        this._world.SetDebugDraw(debugDraw);
     }
 
     update = () => {
-        this.world.Step(
-            1 / this.#framerate, // framerate
+        this._world.Step(
+            1 / this._framerate, // framerate
             10, // velocity iterations
             10 // position iterations
         );
 
-        this.gameLogic();
-        this.world.DrawDebugData();
-        this.world.ClearForces();
-        this.destroyList();
+        this._gameLogic();
+        this._world.DrawDebugData();
+        this._world.ClearForces();
+        this._destroyList();
 
         window.requestAnimationFrame(this.update);
     };
 
-    gameLogic = () => {
+    _gameLogic = () => {
 
     };
 
-    addItem = (item) => {
-        this.#itemList.push(item);
+    _addItem = (item) => {
+        this._itemList.push(item);
     };
 
-    destroyList = () => {
-        for(let i in this.#destroyList){
-            this.world.DestroyBody(this.#destroyList[i]);
+    _destroyList = () => {
+        for(let i in this._destroyList){
+            this.world.DestroyBody(this._destroyList[i]);
         }
-        this.#destroyList.length = 0;
+        this._destroyList.length = 0;
     };
 
     addMouseHandler(mousectx, type, runfunc){
-        this.#mouseHandler.push(new MouseHandler(mousectx, type, runfunc));
+        this._mouseHandler.push(new MouseHandler(mousectx, type, runfunc));
     }
 
-    handleMouseDown = (e) => {
-
-    }
-
-    handleMouseUp = (e) => {
+    _handleMouseDown = (e) => {
 
     }
 
-    handleMouseMove = (e) => {
+    _handleMouseUp = (e) => {
+
+    }
+
+    _handleMouseMove = (e) => {
 
     }
 }
