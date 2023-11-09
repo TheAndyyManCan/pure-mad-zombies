@@ -49,7 +49,7 @@ class HighScoreCrud {
      * @return array Returns an associative array with the results of the database query
      */
     public function getAllHighScores($style=MYSQLI_ASSOC){
-        $this->sql = "select * from highscores order by round, kills desc;";
+        $this->sql = "select * from highscores order by round desc, kills desc;";
         $this->stmt = self::$db->prepare($this->sql);
         $this->stmt->execute();
         $result = $this->stmt->get_result();
