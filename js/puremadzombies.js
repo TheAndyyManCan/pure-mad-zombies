@@ -115,6 +115,22 @@ class PureMadZombies extends Game {
         }
     };
 
+    spawnAllObjects = () => {
+        // Ground and walls
+        this.#bottomWall = new defineStaticObject(1.0, 0.5, 0.05, (this._width / 2), this._height, (this._width / 2), 10, 'border', 'bottomWall', 0, this._scale, this._world);
+        this.#topWall = defineStaticObject(1.0, 0.5, 0.05, (this._width / 2), 0, (this._width / 2), 10, 'border', 'topWall', 0, this._scale, this._world);
+        this.#leftWall = defineStaticObject(1.0, 0.5, 0.05, 0, (this._height / 2), 10, this._height, 'border', 'leftWall', 0, this._scale, this._world);
+        this.#rightWall = defineStaticObject(1.0, 0.5, 0.05, this._width, (this._height / 2), 10, this._height, 'border', 'leftWall', 0, this._scale, this._world);
+
+        // Hero
+        if(!this.#heroSpawned){
+            this.#hero = defineCircleObject(1.0, 0.5, 0.0, (this._width / 2), (this._height / 2), 'hero', 'hero', 10, this._scale, this._world);
+            this.#hero.GetBody().SetFixedRotation(true);
+            this.#heroSpawned = true;
+            this.#hero.changeUserData('health', 100);
+        }
+    };
+
     #decelerateHero = () => {
 
         let x, y;
@@ -182,12 +198,37 @@ class PureMadZombies extends Game {
 
             // Apply the steering force to the zombie
             this.#zombies[i].GetBody().ApplyForce(new b2Vec2(steerX, steerY), zombiePosition);
-
         }
-
     };
 
-    #spawnZombies = (round) => {
+    #spawnZombies = () => {
+        // Increase the number of zombies each round
+        let numberOfZombies = (this.#round + 1) * 2;
 
+        // Set a maximum amount of zombies at 30
+        numberOfZombies = Math.min(numberOfZombies, 30);
+
+        // Spawn the correct amount of zombies, set their health and add them to the zombies array
+        for(let i = 0; i <= numberOfZombies; i++){
+            // Give each zombie random co-ordinates
+            let x, y;
+
+            do {
+                x = Math.random() * this._width + 10;
+                y = Math.random() * this._height + 10;
+            } while (x > this._width && y > this._height);
+
+            // Define a new zombie object
+            let zombie = new defineCircleObject(1.0, 0.5, 0.0, x, y, 'zombie', 'zombie'+[i], 5, this._scale, this._world);
+            // Add zombie health
+            zombie.changeUserData('health', this.#zombieHealth);
+            // Add the zombie to the zombies array
+            this.#zombies.push(zombie);
+        }
+
+        // Stop zombies rotating like wheels
+        for(let i in this.#zombies){
+            this.#zombies[i].GetBody().SetFixedRotation(true);
+        }
     };
 }

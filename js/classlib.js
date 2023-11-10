@@ -34,7 +34,7 @@ class defineObject {
         this._b2dobj = world.CreateBody(this.bodyDef).CreateFixture(this.fixDef);
     }
 
-    _changeUserData(property, newValue){
+    changeUserData(property, newValue){
         let objdata = this.getBody().GetUserData();
         this._userData = typeof objdata === undefined || objdata === null?{}:this.userData;
         this._userData[property] = newValue;
@@ -54,8 +54,8 @@ class defineStaticObject extends defineObject {
         this._fixDef.shape = new b2PolygonShape;
         this._fixDef.shape.SetAsBox(width / SCALE, height / SCALE);
         this._createObj(world);
-        this._changeUserData("id", objid);
-        this._changeUserData("uniqueName", uniqueName);
+        this.changeUserData("id", objid);
+        this.changeUserData("uniqueName", uniqueName);
     }
 }
 
@@ -66,8 +66,8 @@ class defineDynamicObject extends defineObject {
         this._fixDef.shape = new b2PolygonShape;
         this._fixDef.shape.SetAsBox(width / SCALE, height / SCALE);
         this._createObj(world);
-        this._changeUserData('id', objid);
-        this._changeUserData('uniqueName', uniqueName);
+        this.changeUserData('id', objid);
+        this.changeUserData('uniqueName', uniqueName);
     }
 }
 
@@ -77,8 +77,8 @@ class defineCircleObject extends defineObject {
         this._bodyDef.type = b2Body.b2_dynamicBody;
         this._fixDef.shape = new b2CircleShape(radius / SCALE);
         this._createObj(world);
-        this._changeUserData('id', objid);
-        this._changeUserData('uniqueName', uniqueName);
+        this.changeUserData('id', objid);
+        this.changeUserData('uniqueName', uniqueName);
     }
 }
 
