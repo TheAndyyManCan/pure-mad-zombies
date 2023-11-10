@@ -117,9 +117,52 @@ class PureMadZombies extends Game {
 
     #decelerateHero = () => {
 
+        let x, y;
+        let currentX = this.#hero.GetBody().GetLinearVelocity().x;
+        let currentY = this.#hero.GetBody().GetLinearVelocity().y;
+
+        if((currentX < 0.1 && currentX > 0) || (currentX > -0.1 && currentX < 0)){
+            x = 0;
+        } else if(currentX > 0){
+            x = currentX - 0.1;
+        } else if(currentX < 0){
+            x = currentX + 0.1;
+        }
+
+        if((currentY < 0.1 && currentY > 0) || (currentY > -0.1 && currentY < 0)){
+            y = 0;
+        } else if(currentY > 0){
+            y = currentY - 0.1;
+        } else if(currentY < 0){
+            y = currentY + 0.1;
+        }
+
+        this.#hero.GetBody().SetLinearVelocity(new b2Vec2(x, y));
+
     };
 
     #moveZombies = () => {
+
+        for(let i in this.#zombies){
+            // Get the zombie and hero positions
+            let zombiePosition = this.#zombies[i].GetBody().GetWorldCenter();
+            let heroPosition = this.#hero.GetBody().GetWorldCenter();
+
+            // Calculate the vector from the zombie to the hero
+            let xDirection = heroPosition.x - zombiePosition.x;
+            let yDirection = heroPosition.y - zombiePosition.y;
+
+            // Calculate the distance between the zombie and the hero
+            let distance = Math.sqrt(xDirection * xDirection - yDirection * yDirection);
+
+            // Normalize the direction vector
+            if(distance > 0){ // Avoid dividing by 0
+                xDirection = xDirection / distance;
+                yDirection = yDirection / distance;
+            }
+
+
+        }
 
     };
 
