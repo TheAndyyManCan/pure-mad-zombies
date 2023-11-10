@@ -161,6 +161,27 @@ class PureMadZombies extends Game {
                 yDirection = yDirection / distance;
             }
 
+            // Adjust the force based on the distance
+            let maxForce = 20; // Maximum steering force
+            let slowingRadius = 5; // Radius within which zombies start to slow down
+
+            // Calculate the target speed based on the slowing radius
+            let targetSpeed = (distance / slowingRadius) * this.#zombieSpeed;
+
+            // Calculate desired velocity based on the target speed
+            let desiredVelocityX = xDirection * targetSpeed;
+            let desiredVelocityY = yDirection * targetSpeed;
+
+            // Calculate the steering force
+            let steerX = desiredVelocityX - this.#zombies[i].GetBody().GetLinearVelocity().x;
+            let steerY = desiredVelocityY - this.#zombies[i].GetBody().GetLinearVelocity().y;
+
+            // Adjust the force based on the maximum steering force
+            steerX = Math.min(steerX, maxForce);
+            steerY = Math.min(steerY, maxForce);
+
+            // Apply the steering force to the zombie
+            this.#zombies[i].GetBody().ApplyForce(new b2Vec2(steerX, steerY), zombiePosition);
 
         }
 
