@@ -5,12 +5,27 @@
 
 #easelcan {
     display: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 0;
+}
+
+#viewport {
+    position: absolute;
+    z-index: 1;
+    margin: 0;
+    padding: 0;
+    width: 800px;
+    height: 600px;
+    border: none;
+    overflow: hidden;
 }
 
 #splashScreen {
     background-color: black;
     color: red;
-    height: 800px;
+    height: 600px;
     width: 800px;
     display: flex;
     justify-content: center;
@@ -36,15 +51,15 @@
     display: none;
 }
 
-#licenseLinks {
-    position: absolute;
-    bottom: 0;
-}
+/* #licenseLinks { */
+/*     position: absolute; */
+/*     bottom: 0; */
+/* } */
 
 #menuScreen {
     background-color: black;
     color: red;
-    height: 800px;
+    height: 600px;
     width: 800px;
     display: none;
     justify-content: center;
@@ -72,7 +87,7 @@
 #aboutScreen {
     background-color: black;
     color: red;
-    height: 800px;
+    height: 600px;
     width: 800px;
     display: none;
     justify-content: center;

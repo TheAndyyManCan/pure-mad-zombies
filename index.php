@@ -14,10 +14,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous" defer ></script>
     <script src="https://code.createjs.com/1.0.0/easeljs.min.js" defer ></script>
     <script src="https://code.createjs.com/1.0.0/preloadjs.min.js" defer ></script>
-    <script src="./js/defs.js" defer ></script>
-    <script src="./js/classlib.js" defer ></script>
-    <script src="js/appFlow.js" defer ></script>
-    <!-- <script src="./main.js" defer ></script> -->
+    <script src="./js/main.js" defer ></script>
     <meta charset="UTF-8">
     <title>Pure Mad Zombies</title>
     <link rel="stylesheet" href="./css/main.css">
@@ -69,8 +66,10 @@
             <button id="menuButton">Back to menu</button>
         </div>
     </div>
-    <canvas id="b2dcan" height="800" width="800"></canvas>
-    <canvas id="easelcan" height="800" width="800"></canvas>
+    <div id="viewport">
+        <canvas id="easelcan" height="800" width="1200"></canvas>
+    </div>
+    <canvas id="b2dcan" height="800" width="1200"></canvas>
     <p id="roundDisplay">Round: <span id="round"></span></p>
     <p id="killDisplay">Kills: <span id="kills"></span></p>
     <div id="licenseLinks">

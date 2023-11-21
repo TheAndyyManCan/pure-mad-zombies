@@ -54,7 +54,7 @@ var destroyList = []; //Empty list at start
 /**
  * Define Canvas and World
  */
-const WIDTH=800;
+const WIDTH=1200;
 const HEIGHT=800;
 const SCALE=30;
 
@@ -215,6 +215,7 @@ function update(){
      */
     easelHero.x = hero.GetBody().GetPosition().x*SCALE;
     easelHero.y = hero.GetBody().GetPosition().y*SCALE;
+    followHero();
 
     for(var i in zombies){
         zombieSpriteMap[i].sprite.x = zombies[i].GetBody().GetPosition().x*SCALE;
@@ -774,9 +775,6 @@ function makeBitmap(loaderimage, b2x, b2y){
  * @param (int) kills The amount of kills the player achieved
  */
 function updateHighScore(username, round, kills){
-    console.log(username);
-    console.log(round);
-    console.log(kills);
     var XHR = createXHR();
     XHR.open('post', 'php/submithighscore.php', true);
     XHR.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -789,4 +787,25 @@ function createXHR(){
     } else if(window.ActiveXObject){
         return new ActiveXObject('Microsoft.XMLHTTP');
     }
+}
+
+/**
+ * Viewport controls
+ */
+
+var initialised = false;
+var animationComplete = false;
+
+function followHero(){
+    var zoomPadding = 100;
+    var Viewport = Object.create({});
+    Viewport.width = $('viewport').width();
+    Viewport.height = $('viewport').height();
+    Viewport.left = parseInt($('easelcan').css('left'));
+    Viewport.top = parseInt($('easelcan').css('top'));
+    var ActiveWindow = Object.create({});
+    ActiveWindow.leftPadding = 150;
+    ActiveWindow.topPadding = 150;
+    ActiveWindow.bottomPadding = 150;
+    ActiveWindow.rightPadding = 150;
 }
